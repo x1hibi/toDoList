@@ -1,8 +1,17 @@
 <template>
     <form>
-        <input class="inputCute" placeholder="Username / Email">
-        <input class="inputCute" placeholder="Password">
-        <button class="buttonBlue">Login</button>
+        <div v-if="type=='login'">
+            <input type="text" class="inputCute" v-model="usernameEmail" placeholder="Username / Email">
+            <input type="password" class="inputCute" v-model="userPassword" placeholder="Password">
+            <button type="button" class="buttonBlue" @click="login()">Login</button>
+        </div>
+        <div v-else>
+            <input type="text" class="inputCute" v-model="username" placeholder="Username">
+            <input type="text" class="inputCute" v-model="userEmail" placeholder="Email">
+            <input type="password" class="inputCute" v-model="userPassword" placeholder="Password">
+            <input type="password" class="inputCute" v-model="userPasswordConfirmation" placeholder="Confirm Password">
+            <button type="button" class="buttonBlue" @click="register()">Sing Up</button>
+        </div>
     </form>
 </template>
 
@@ -14,18 +23,30 @@
         props:{
             option:String,
             toltip:String,
+            type:String,
             positionY:String,
         }
         ,
         data(){
             return {
-                'debug':this.$parent.$parent.debug,
+                debug:this.$parent.$parent.debug,
+                usernameEmail:'',
+                userPassword:'',
+                username:'',
+                userEmail:'',
+                userPasswordConfirmation:'',
             }
         },
 
         methods:{
             editItem(){
                 console.log("edit")
+            },
+            login(){
+                console.log(this.usernameEmail,this.userPassword)
+            },
+            register(){
+                console.log(this.username, this.userEmail,this.userPassword,this.userPasswordConfirmation)
             }
         }
     }
@@ -34,7 +55,10 @@
 
 <style scoped>
 
+form{
+    overflow: auto;
 
+}
 .inputCute{
     transition-duration: 0.35s;
     border-radius: 25px;
@@ -50,7 +74,7 @@
     font-weight: 400;
     text-align: center;
     height: 40px;
-    width: 70%;
+    width: 95%;
     -webkit-appearance: none;
 }
 

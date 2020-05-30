@@ -273,15 +273,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     this.$parent.debug("status", "mounted");
+    var isAndroid = navigator.userAgent.toLowerCase().indexOf("android") > -1; //&& ua.indexOf("mobile");
+
+    if (isAndroid) {
+      document.write('<meta name="viewport" content="width=device-width,height=' + window.innerHeight + ', initial-scale=1.0">');
+    }
   },
   data: function data() {
     return {
+      debug: this.$parent.debug,
       test: "juan ",
       headerList: "Example List",
       loginPosition: "0",
@@ -289,10 +296,11 @@ __webpack_require__.r(__webpack_exports__);
       menuDisplayed: false,
       menuIcon: 'menu',
       loginIcon: 'login',
+      registerIcon: 'register',
       menuToltip: 'Display menu',
       loginToltip: "Sign in",
-      displayLogin: false,
-      displayList: true,
+      currentSection: 'example',
+      displaySection: 'example',
       data: [{
         task: 'Scary Movie',
         status: 'finished',
@@ -327,19 +335,55 @@ __webpack_require__.r(__webpack_exports__);
       this.loginPosition = this.menuDisplayed ? "1" : "0";
       this.registerPosition = this.menuDisplayed ? "2" : "0";
     },
-    login: function login() {
-      document.getElementById("bodyList").classList.toggle("loginBody");
-      document.getElementById("bodyList").parentElement.classList.toggle("listLogin");
-      this.displayLogin = !this.displayLogin;
-      this.displayList = !this.displayList;
-      this.headerList = this.displayLogin ? 'Sign in' : 'Example List';
-      this.menuDisplayed = !this.menuDisplayed;
-      this.menuIcon = this.menuDisplayed ? 'close' : 'menu';
-      this.loginPosition = "0";
-      this.registerPosition = "0";
-      this.loginToltip = this.displayLogin ? 'Example List' : 'Sign in';
-      this.loginIcon = this.displayLogin ? 'editor' : 'login';
+    register: function register() {
+      this.changeBody("register");
+      this.changeTitle(this.currentSection == "register" ? 'Example List' : 'Register');
+      this.loginToltip = this.displaySection == 'example' ? 'Example List' : 'Sign Up';
+      this.registerIcon = this.displaySection == 'example' ? 'editor' : 'register';
+      this.loginIcon = 'login';
     },
+    login: function login() {
+      this.changeTitle(this.currentSection == "login" ? 'Example List' : 'Login');
+      this.changeBody("login");
+      this.loginToltip = this.displaySection == 'example' ? 'Example List' : 'Sign in';
+      this.loginIcon = this.displaySection == 'example' ? 'editor' : 'login';
+      this.registerIcon = 'register';
+    },
+    changeTitle: function changeTitle(newTitle) {
+      var _this = this;
+
+      //we set opacity to 0 and after change the title and set again the opacity
+      document.getElementsByClassName("title")[0].style.opacity = 0;
+      setTimeout(function () {
+        _this.headerList = newTitle;
+        document.getElementsByClassName("title")[0].style.opacity = 1;
+      }, 250);
+    },
+    changeBody: function changeBody(idToDisplay) {
+      console.log(this.currentSection);
+      this.currentSection = idToDisplay;
+      setTimeout(function () {}, 250); //we set opacity to 0 and after change the title and set again the opacity
+
+      /*
+      let displayed=document.getElementById(idToDisplay)
+       document.getElementById("bodyList").style.overflowY=this.displaySection!='example' ? 'scroll' : 'hidden';
+      document.getElementById("bodyList").parentElement.style.height=(this.displaySection=="example" || this.displaySection=="list") ? 'fit-content' : '100%';
+      this.debug('changebody','before if')
+      this.debug('dis',idToDisplay)
+       document.getElementById(this.currentSection).style.opacity=0
+       this.debug('changebody','afer if')
+       this.menuDisplayed=!this.menuDisplayed
+      this.menuIcon=this.menuDisplayed ? 'close' : 'menu'
+      this.loginPosition="0"
+      this.registerPosition="0"
+      setTimeout(() => {
+          this.displaySection= this.displaySection==this.currentSection ? idToDisplay : this.currentSection   
+          this.currentSection= idToDisplay
+      }, 250);                                                                                                          
+      console.log(this.displaySection)
+      */
+    },
+    animationHandler: function animationHandler() {},
     makePost: function makePost() {
       console.log("start a post");
       /*
@@ -421,6 +465,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     this.debug("status", "mounted menu");
@@ -428,16 +481,28 @@ __webpack_require__.r(__webpack_exports__);
   props: {
     option: String,
     toltip: String,
+    type: String,
     positionY: String
   },
   data: function data() {
     return {
-      'debug': this.$parent.$parent.debug
+      debug: this.$parent.$parent.debug,
+      usernameEmail: '',
+      userPassword: '',
+      username: '',
+      userEmail: '',
+      userPasswordConfirmation: ''
     };
   },
   methods: {
     editItem: function editItem() {
       console.log("edit");
+    },
+    login: function login() {
+      console.log(this.usernameEmail, this.userPassword);
+    },
+    register: function register() {
+      console.log(this.username, this.userEmail, this.userPassword, this.userPasswordConfirmation);
     }
   }
 });
@@ -530,7 +595,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.list[data-v-6ee53bb8]{\r\n    background: blue;\r\n    border-radius: 15px;\r\n    box-shadow: 5px 5px 10px 0 rgba(255, 182, 193, 0.5);\r\n    display: grid;\r\n    grid-template-rows: 15% 85%;\r\n    grid-area: 2/2/3/3;\r\n    height: 100%;\n}\n.headerList[data-v-6ee53bb8]{\r\n    background: linear-gradient(to right,rgb(113, 36, 214),rgb(126, 52, 224),rgb(141, 68, 236),rgb(156, 93, 240));\r\n    border-radius: 15px 15px 0 0;\r\n    display: grid;\r\n    grid-area: 1/1/2/2;\r\n    height: 100%;\r\n    width: 100%;\n}\n.title[data-v-6ee53bb8]{\r\n    align-self: center;\r\n    color:rgb(255, 255, 255);\r\n    font-size: 2.5em;\r\n    font-family: 'Ubuntu', sans-serif;\r\n    font-weight: 300;\r\n    margin: 0;\r\n    text-shadow: 0 0 3px rgb(75, 8, 8);\r\n    justify-self: center;\r\n    width:-webkit-fit-content;\r\n    width:-moz-fit-content;\r\n    width:fit-content;\n}\n.bodyList[data-v-6ee53bb8]{\r\n    background:linear-gradient(to top, rgb(235, 232, 232), whitesmoke,rgb(240, 232, 232));\r\n    border:1px solid red;\r\n    border-radius: 0 0 15px 15px;\r\n    box-sizing: border-box;\r\n    grid-area: 2/1/3/2;\r\n    height: 100%;\r\n    padding:5% 2.5%;\r\n    overflow-y: scroll;\n}\n.loginBody[data-v-6ee53bb8]{\r\n    border-radius: 15px;\r\n    overflow-y: hidden;\r\n    height: -webkit-fit-content;\r\n    height: -moz-fit-content;\r\n    height: fit-content;\n}\n.listLogin[data-v-6ee53bb8]{\r\n    height: -webkit-fit-content;\r\n    height: -moz-fit-content;\r\n    height: fit-content;\n}\r\n\r\n", ""]);
+exports.push([module.i, "\n.list[data-v-6ee53bb8]{\r\n    background: blue;\r\n    border-radius: 15px;\r\n    box-shadow: 5px 5px 10px 0 rgba(255, 182, 193, 0.5);\r\n    display: grid;\r\n    grid-template-rows: auto 1fr;\r\n    grid-area: 2/2/3/3;\r\n    height: 100%;\n}\n.headerList[data-v-6ee53bb8]{\r\n    background: linear-gradient(to right,rgb(113, 36, 214),rgb(126, 52, 224),rgb(141, 68, 236),rgb(156, 93, 240));\r\n    border-radius: 15px 15px 0 0;\r\n    display: grid;\r\n    grid-area: 1/1/2/2;\r\n    width: 100%;\n}\n.title[data-v-6ee53bb8]{\r\n    align-self: center;\r\n    color:rgb(255, 255, 255);\r\n    font-size: 2.25em;\r\n    font-family: 'Ubuntu', sans-serif;\r\n    font-weight: 300;\r\n    justify-self: center;\r\n    margin: 0;\r\n    padding: 20px 0;\r\n    text-shadow: 0 0 3px rgb(75, 8, 8);\r\n    transition:opacity 0.25s ease-in;\r\n    width:-webkit-fit-content;\r\n    width:-moz-fit-content;\r\n    width:fit-content;\n}\n.bodyList[data-v-6ee53bb8]{\r\n    background:linear-gradient(to top, rgb(235, 232, 232), whitesmoke,rgb(240, 232, 232));\r\n    border:1px solid red;\r\n    border-radius: 0 0 15px 15px;\r\n    box-sizing: border-box;\r\n    grid-area: 2/1/3/2;\r\n    height: 100%;\r\n    padding:5% 2.5%;\r\n    overflow-y: scroll;\n}\n.fade[data-v-6ee53bb8]{\r\n    -webkit-animation-name: fadeIn-data-v-6ee53bb8;\r\n            animation-name: fadeIn-data-v-6ee53bb8;\r\n    -webkit-animation-duration: 0.25s;\r\n            animation-duration: 0.25s;\r\n    -webkit-animation-timing-function:ease-in-out ;\r\n            animation-timing-function:ease-in-out ;\r\n    transition-duration: 0.5s;\n}\n@-webkit-keyframes fadeIn-data-v-6ee53bb8{\n0%{opacity: 0;}\n100%{opacity: 1;}\n}\n@keyframes fadeIn-data-v-6ee53bb8{\n0%{opacity: 0;}\n100%{opacity: 1;}\n}\r\n\r\n\r\n", ""]);
 
 // exports
 
@@ -549,7 +614,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.inputCute[data-v-4d2414bf]{\r\n    transition-duration: 0.35s;\r\n    border-radius: 25px;\r\n    border: 5px outset rgb(156, 93, 240);\r\n    color: #6a6a6a;\r\n    display: block;\r\n    margin: auto;\r\n    margin-bottom: 1em;\r\n    outline: none;\r\n    padding: 0;\r\n    font-family: 'Ubuntu', sans-serif;\r\n    font-size: 1.1em;\r\n    font-weight: 400;\r\n    text-align: center;\r\n    height: 40px;\r\n    width: 70%;\r\n    -webkit-appearance: none;\n}\n.inputCute[data-v-4d2414bf]:focus{\r\n    box-shadow: 0 0 5px rgba(0, 0, 139, 0.5);\n}\r\n    \r\n\r\n\r\n", ""]);
+exports.push([module.i, "\nform[data-v-4d2414bf]{\r\n    overflow: auto;\n}\n.inputCute[data-v-4d2414bf]{\r\n    transition-duration: 0.35s;\r\n    border-radius: 25px;\r\n    border: 5px outset rgb(156, 93, 240);\r\n    color: #6a6a6a;\r\n    display: block;\r\n    margin: auto;\r\n    margin-bottom: 1em;\r\n    outline: none;\r\n    padding: 0;\r\n    font-family: 'Ubuntu', sans-serif;\r\n    font-size: 1.1em;\r\n    font-weight: 400;\r\n    text-align: center;\r\n    height: 40px;\r\n    width: 95%;\r\n    -webkit-appearance: none;\n}\n.inputCute[data-v-4d2414bf]:focus{\r\n    box-shadow: 0 0 5px rgba(0, 0, 139, 0.5);\n}\r\n    \r\n\r\n\r\n", ""]);
 
 // exports
 
@@ -2001,9 +2066,10 @@ var render = function() {
         "div",
         { staticClass: "bodyList", attrs: { id: "bodyList" } },
         [
-          _vm.displayList
+          _vm.displaySection == "example"
             ? _c(
                 "section",
+                { staticClass: "fade", attrs: { id: "example" } },
                 _vm._l(_vm.data, function(item, index) {
                   return _c("item-component", {
                     key: index,
@@ -2023,7 +2089,19 @@ var render = function() {
             ? undefined
             : _vm._e(),
           _vm._v(" "),
-          _vm.displayLogin ? _c("login-component") : _vm._e()
+          _vm.displaySection == "login"
+            ? _c("login-component", {
+                staticClass: "fade",
+                attrs: { id: "login", type: "login" }
+              })
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.displaySection == "register"
+            ? _c("login-component", {
+                staticClass: "fade",
+                attrs: { id: "register", type: "register" }
+              })
+            : _vm._e()
         ],
         1
       ),
@@ -2032,7 +2110,8 @@ var render = function() {
         attrs: {
           option: _vm.loginIcon,
           positionY: _vm.loginPosition,
-          toltip: _vm.loginToltip
+          toltip: _vm.loginToltip,
+          disabled: "true"
         },
         on: {
           click: function($event) {
@@ -2043,9 +2122,14 @@ var render = function() {
       _vm._v(" "),
       _c("menu-component", {
         attrs: {
-          option: "register",
+          option: _vm.registerIcon,
           positionY: _vm.registerPosition,
           toltip: "Sign up"
+        },
+        on: {
+          click: function($event) {
+            return _vm.register()
+          }
         }
       }),
       _vm._v(" "),
@@ -2083,28 +2167,173 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("form", [
+    _vm.type == "login"
+      ? _c("div", [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.usernameEmail,
+                expression: "usernameEmail"
+              }
+            ],
+            staticClass: "inputCute",
+            attrs: { type: "text", placeholder: "Username / Email" },
+            domProps: { value: _vm.usernameEmail },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.usernameEmail = $event.target.value
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.userPassword,
+                expression: "userPassword"
+              }
+            ],
+            staticClass: "inputCute",
+            attrs: { type: "password", placeholder: "Password" },
+            domProps: { value: _vm.userPassword },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.userPassword = $event.target.value
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "buttonBlue",
+              attrs: { type: "button" },
+              on: {
+                click: function($event) {
+                  return _vm.login()
+                }
+              }
+            },
+            [_vm._v("Login")]
+          )
+        ])
+      : _c("div", [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.username,
+                expression: "username"
+              }
+            ],
+            staticClass: "inputCute",
+            attrs: { type: "text", placeholder: "Username" },
+            domProps: { value: _vm.username },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.username = $event.target.value
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.userEmail,
+                expression: "userEmail"
+              }
+            ],
+            staticClass: "inputCute",
+            attrs: { type: "text", placeholder: "Email" },
+            domProps: { value: _vm.userEmail },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.userEmail = $event.target.value
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.userPassword,
+                expression: "userPassword"
+              }
+            ],
+            staticClass: "inputCute",
+            attrs: { type: "password", placeholder: "Password" },
+            domProps: { value: _vm.userPassword },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.userPassword = $event.target.value
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.userPasswordConfirmation,
+                expression: "userPasswordConfirmation"
+              }
+            ],
+            staticClass: "inputCute",
+            attrs: { type: "password", placeholder: "Confirm Password" },
+            domProps: { value: _vm.userPasswordConfirmation },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.userPasswordConfirmation = $event.target.value
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "buttonBlue",
+              attrs: { type: "button" },
+              on: {
+                click: function($event) {
+                  return _vm.register()
+                }
+              }
+            },
+            [_vm._v("Sing Up")]
+          )
+        ])
+  ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("form", [
-      _c("input", {
-        staticClass: "inputCute",
-        attrs: { placeholder: "Username / Email" }
-      }),
-      _vm._v(" "),
-      _c("input", {
-        staticClass: "inputCute",
-        attrs: { placeholder: "Password" }
-      }),
-      _vm._v(" "),
-      _c("button", { staticClass: "buttonBlue" }, [_vm._v("Login")])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -14835,8 +15064,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\Users\vanra\Documents\yop2020\gitPortafolio\laravelProjects\listToDo\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\Users\vanra\Documents\yop2020\gitPortafolio\laravelProjects\listToDo\resources\css\app.scss */"./resources/css/app.scss");
+__webpack_require__(/*! C:\Users\Vanray\Documents\rayGit\toDoList\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\Users\Vanray\Documents\rayGit\toDoList\resources\css\app.scss */"./resources/css/app.scss");
 
 
 /***/ })
