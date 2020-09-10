@@ -3,28 +3,19 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
+//routes for login and register of users
+Route::post('/register', 'UserController@registerUserData');
+Route::get('/login','UserController@loginUser');
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+//routes to check user and get userdata
+Route::get('/authUserAndGetData', 'UserController@checkUserData');
 
+//routes to save modificacions
+Route::post('/saveModificationsToUserLists', 'ToDoListController@saveChanges');
+Route::post('/saveModificationsToUserTasks', 'TaskController@saveChanges');
 
-Route::post('/insert', 'userController@store');
-Route::get('/select', 'userController@index');
-Route::get('/select2', 'userController@show');
-Route::get('/check', 'userController@pass');
-
-Route::put('/update', 'userController@update');
-Route::delete('/delete', 'userController@delete');
+//ROUTES for version 1.1
+Route::put('/update', 'UserController@update');
+Route::delete('/delete', 'UserController@delete');
 
 

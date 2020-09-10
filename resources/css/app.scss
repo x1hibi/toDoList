@@ -1,18 +1,43 @@
 /*General styles*/
 
 html,body{
+    background-color: whitesmoke;
     margin:0;
     padding:0;
 }
 
-
 .listContainer{
     background: whitesmoke;
     display: grid;
-    grid-template-columns: 5% 90% 5%;
+    grid-template-columns: 2.5% 95% 2.5%;
     grid-template-rows: 2.5% 95% 2.5%;
     width: 100%;
     height: 100vh;
+}
+
+.headerList{
+    background: linear-gradient(to right,rgb(113, 36, 214),rgb(126, 52, 224),rgb(141, 68, 236),rgb(156, 93, 240));
+    border-radius: 15px 15px 0 0;
+    display: grid;
+    grid-area: 1/1/2/2;
+    text-align: justify;
+    width: 100%;
+}
+
+.title{
+    align-self: center;
+    color:rgb(255, 255, 255);
+    font-size: 1.9em;
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 300;
+    justify-self: center;
+    margin: 0;
+    padding: 0 5px;
+    text-align: center;
+    text-shadow: 0 0 3px rgb(75, 8, 8);
+    transition:opacity 0.25s ease-in;
+    width:fit-content;
+    word-break: break-word;
 }
 
 .buttonBlue{
@@ -41,24 +66,28 @@ html,body{
     animation-timing-function: ease;
 }
 
+.noSelectOnAndroid {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 @keyframes backgroundColor{
     0%{background-size: 100%;}
     100%{background-size: 200%;}
 }
 
-@media (min-width:720px){
+@media (min-width:769px){
 
     .listContainer{
-        background: whitesmoke;
-        display: grid;
         grid-template-columns: 25% 50% 25%;
-        grid-template-rows: 2.5% 95% 2.5%;
-        width: 100%;
-        height: 100vh;
     }    
 
-    .buttonBlue{
-        width: 50%;
+    .title{
+        font-size: 2.25em;
     }
 
 }

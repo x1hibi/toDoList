@@ -1,35 +1,18 @@
 <template>
-        <i @click="$emit('click',$event)"  :class="[option=='menu' ? 'fas fa-stream buttonFixed' : option=='login' ? 'fas fa-user buttonFixed' : option=='register' ? 'fa fa-user-plus buttonFixed' : option=='editor' ? 'fas fa-pen buttonFixed' : 'fas fa-times buttonFixed' ]" :style="{bottom: `${(50*this.positionY)+15*(this.positionY)+10}px`}" :title="toltip"></i>
+        <i @click="$emit('click',$event)"  :class="[option=='menu' ? 'fas fa-stream buttonFixed' : option=='login' ? 'fas fa-user buttonFixed' : option=='register' ? 'fa fa-user-plus buttonFixed' : option=='editor' ? 'fas fa-pen buttonFixed' : option=='logout' ? 'fas fa-user-alt-slash buttonFixed' : option=='list' ? 'fa fa-list-ul buttonFixed' : 'fas fa-times buttonFixed' ]" :style="{bottom: `${(50*this.positionY)+15*(this.positionY)+10}px`}" :title="toltip"></i>
 </template>
 
 <script>
     export default {
-        mounted() {
-            this.debug("status","mounted menu")
-        },
         props:{
             option:String,
-            toltip:String,
             positionY:String,
-        }
-        ,
-        data(){
-            return {
-                'debug':this.$parent.$parent.debug,
-            }
-        },
-
-        methods:{
-            editItem(){
-                console.log("edit")
-            }
+            toltip:String,
         }
     }
 </script>
 
-
 <style scoped>
-
 
 .buttonFixed{
     align-items: center;
@@ -40,20 +23,19 @@
     cursor: pointer;
     display: grid;
     font-size: 25px;
+    height: 50px;
+    justify-content: center;
     outline: none;
     padding: 0;
     position: fixed;
-    justify-content: center;
     right: 10px;
     transition-duration: 0.35s;
     transition-timing-function: ease-in-out;
-    height: 50px;
     width: 50px;
 }
 
 .buttonFixed:hover{
     text-shadow: 0 0 10px rgb(176, 176, 235);
 }
-
 
 </style>

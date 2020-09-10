@@ -1,19 +1,17 @@
 window.Vue = require('vue');
 
-import example from "./components/ExampleComponent";
+import spinner from "./components/SpinnerComponent";
 import listContainer from "./components/ListComponent" 
 
+//Create a vue object root  
 const app = new Vue({
     el: '#listApp',
-    components:{
-        'test-component':example,
-        'list-component':listContainer,
+    data :{
+        spinner:true,
     },
-    methods:{
-        debug(label,message){
-            let Label=label[0].toUpperCase() + label.slice(1)
-            return typeof(message)=="string" ? console.log(`%c ${Label}: %c${message}`,"color:yellow","color:cyan") : console.log(`%c ${Label}:`,"color:white",message)
-        }
+    components:{
+        'spinner-component':spinner,
+        'list-component':listContainer,
     }
-
+    
 });

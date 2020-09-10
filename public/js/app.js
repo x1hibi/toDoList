@@ -86,6 +86,155 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./node_modules/@babel/runtime/regenerator/index.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/@babel/runtime/regenerator/index.js ***!
+  \**********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(/*! regenerator-runtime */ "./node_modules/regenerator-runtime/runtime.js");
+
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AlertComponent.vue?vue&type=script&lang=js&":
+/*!*************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/AlertComponent.vue?vue&type=script&lang=js& ***!
+  \*************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _ItemComponent__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ItemComponent */ "./resources/js/components/ItemComponent.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: {
+    currentItem: Number,
+    id: Number,
+    messageFirst: String,
+    messageSecond: String,
+    title: String
+  },
+  data: function data() {
+    return {
+      listOfLists: this.$parent.listOfLists
+    };
+  },
+  methods: {
+    /**
+     * Apply the close animation and remove alert
+     */
+    animationCloseAlert: function animationCloseAlert() {
+      var _this = this;
+
+      //start animation when opacity change
+      document.getElementsByClassName("alertContainer")[0].style.opacity = "0"; // remove the modal after finish animation time
+
+      setTimeout(function () {
+        _this.$parent.showAlert = false;
+      }, 300);
+    },
+
+    /**
+     * Check the list where ask for deletion, and decide how delete
+     * @param {(Number|String)} index - Index of the item to delete
+     * @param {(Number|String)} id - Id of the item to delete
+     */
+    deletionType: function deletionType(index, id) {
+      //if you are delete a example list you only need to remove from the current list, otherwise you shoud save changes
+      this.$parent.displaySection == 'example' ? (this.$parent.exampleData.splice(index, 1), this.animationCloseAlert()) : this.confirmDeletion(index, id);
+    },
+
+    /**
+     * Confirm action to delete the current item and save changes correcly in local variables and local storage
+     * @param {(Number|String)} index - Index of the item to delete
+     * @param {(Number|String)} id - Id of the item to delete
+     */
+    confirmDeletion: function confirmDeletion(index, id) {
+      //we block the check button to avoid error when save changes
+      document.getElementsByClassName("fa-check")[0].disabled = true;
+      var isListOfList = document.getElementsByClassName("modalContainer")[0] != undefined; //remove from the displayed list
+
+      var selectedList = isListOfList ? 'listOfLists' : 'listOfTasks';
+      this.$parent[selectedList].splice(index, 1);
+      this.animationCloseAlert(); // get correct id
+
+      var idOfList = isListOfList ? id : this.$parent.currentListId; //get index of the current array with local backup of items
+
+      var backupIndex = this.$parent.listOfTasksLocalBackup.findIndex(function (list) {
+        return list[0].list_id == idOfList;
+      });
+
+      if (isListOfList) {
+        //get all modifications of all task without modidications of task from the deleted list and saved
+        var newModifiedTasks = this.$parent.modifiedTasks.filter(function (item) {
+          return item.list_id != id;
+        });
+        this.$parent.modifiedTasks = newModifiedTasks; // get all list withput the deleted list and saved
+
+        var newDeletedTasks = this.$parent.deletedTasks.filter(function (item) {
+          return item.listId != id;
+        });
+        this.$parent.deletedTasks = newDeletedTasks; //we check if the list exist in variable in local backup
+
+        if (backupIndex >= 0) {
+          //delete from local backup 
+          this.$parent.listOfTasksLocalBackup.splice(backupIndex, 1);
+        } //if there is a task and the number of task is one or zero
+
+      } else if (!isListOfList && this.$parent.listOfTasksLocalBackup[backupIndex].length <= 1) {
+        //delete the last task and the array
+        this.$parent.listOfTasksLocalBackup.splice(backupIndex, 1);
+      } //check the size of the current and change the status in list 
+
+
+      !isListOfList ? this.$parent.checkAndModifyStatusList() : ''; //check if exits modification of the current item 
+
+      var existModification = this.$parent.hasBeenModifiedThisItem(id, isListOfList ? true : false);
+
+      if (existModification !== false) {
+        //if exist a task or list modified we remove it
+        this.$parent[isListOfList ? 'modifiedLists' : 'modifiedTasks'].splice(existModification, 1);
+      } //add the list/task to the deleted array
+
+
+      if (id >= 0) {
+        isListOfList ? this.$parent.deletedLists.push(id) : this.$parent.deletedTasks.push({
+          taskId: id,
+          listId: this.$parent.currentListId
+        });
+      } //refresh current list to refresh DOM and see the correct order in the HTML 
+
+
+      this.$parent.refreshList(selectedList, this.$parent[selectedList].slice(0));
+    }
+  },
+  components: {
+    'item-component': _ItemComponent__WEBPACK_IMPORTED_MODULE_0__["default"]
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ButtonComponent.vue?vue&type=script&lang=js&":
 /*!**************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ButtonComponent.vue?vue&type=script&lang=js& ***!
@@ -100,56 +249,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  mounted: function mounted() {
-    this.debug("status", "mounted button");
-  },
   props: {
-    type: String,
     color: String,
-    shadow: String
-  },
-  data: function data() {
-    return {
-      'debug': this.$parent.$parent.$parent.debug
-    };
-  },
-  methods: {
-    editItem: function editItem() {
-      console.log("edit");
-    }
-  }
-});
-
-/***/ }),
-
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js&":
-/*!***************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js& ***!
-  \***************************************************************************************************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-/* harmony default export */ __webpack_exports__["default"] = ({
-  mounted: function mounted() {
-    console.log('Component mounted.');
+    shadow: String,
+    type: String
   }
 });
 
@@ -164,7 +267,27 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _ButtonComponent__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ButtonComponent */ "./resources/js/components/ButtonComponent.vue");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _ButtonComponent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ButtonComponent */ "./resources/js/components/ButtonComponent.vue");
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 //
 //
 //
@@ -182,62 +305,417 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  mounted: function mounted() {
-    this.debug("status", "mounted item");
-  },
   props: {
-    task: String,
-    status: String,
     created: String,
-    finished: String
+    finished: String,
+    id: Number,
+    index: Number,
+    status: String,
+    type: String,
+    value: String
   },
   data: function data() {
     return {
-      'debug': this.$parent.$parent.debug,
-      'editor': 'editorOff',
-      'shadow': this.status == 'finished' ? '0 0 1.5px rgb(30, 9, 255,0.5)' : '',
-      'starColor': this.status == 'finished' ? 'yellow' : 'red',
-      'show': false,
-      'newStatus': this.status
+      animationInProcess: false,
+      editor: 'editorOff',
+      newStatus: this.status,
+      previousString: '',
+      shadow: this.status == 'finished' ? '0 0 1.5px rgb(30, 9, 255,0.5)' : '',
+      show: false,
+      starColor: this.status == 'finished' ? 'yellow' : 'red'
     };
   },
   methods: {
-    editItem: function editItem(e) {
-      this.show = false;
-      var item = e.target.nextElementSibling.children[0];
-      item.className = item.className.match(/editableBorder/g) ? 'itemText' : 'itemText editableBorder';
-      this.debug("list", item.classList);
-      this.debug("editor", this.editor);
-      this.editor = item.contentEditable == 'false' ? 'editorOn' : 'editorOff';
-      item.style.overflowY = item.contentEditable == 'false' ? 'scroll' : '';
-      item.contentEditable = item.contentEditable == 'false' ? 'true' : 'false';
-    },
-    showItem: function showItem(e) {
-      var item = e.target;
+    /**
+     * Takes care of let open just one editor to avoid multiples editions 
+     * @param {Object} currentP - Current element to edit 
+     */
+    onlyOneEditable: function onlyOneEditable(currentP) {
+      //get array of paragrahp elements with editor active and the icons of editor active 
+      var pEditables = _toConsumableArray(document.getElementsByClassName("editable"));
 
-      if (this.editor == "editorOff") {
-        item.classList.toggle("showItem");
-        this.show = !this.show;
+      var iconEdit = _toConsumableArray(document.getElementsByClassName("fa-edit"));
+
+      pEditables.forEach(function (editable, index) {
+        editable.scrollTo(0, 0);
+
+        if (editable != currentP) {
+          //convert paragraph in a editable element and change styles and name class 
+          iconEdit[index].className = "far fa-edit";
+          editable.contentEditable = false;
+          editable.className = editable.className.match(/showItem/g) ? "itemText editable showItem" : "itemText editable";
+          editable.parentElement.className = editable.parentElement.className.match(/efectText/g) ? "noOutliner efectText" : "noOutliner";
+          editable.style.overflowY = '';
+        }
+      });
+    },
+
+    /**
+     * Check every item in displayed list and set a red border if are empty 
+     * @returns {Boolean} 
+     */
+    checkEmptyValues: function checkEmptyValues() {
+      var items = _toConsumableArray(document.getElementsByClassName("editable"));
+
+      var emptyItems = 0;
+      items.forEach(function (item) {
+        //check every item to see if the value is empty ("") and set a red vorder 
+        if (item.textContent == "") {
+          item.style.setProperty("border", "2px solid red", "important");
+          item.style.margin = "0 2.5px";
+          emptyItems += 1;
+        }
+      });
+      return emptyItems == 0 ? true : false;
+    },
+
+    /**
+     * Get values from the modified item in list and send it as parameter in saveChanges() 
+     * @param {String} type - indicate if component displayed (modalList indicate that is a list of list otherwise is list of task)
+    */
+    saveChangesList: function saveChangesList(type) {
+      //declare a pointer to the vue father instance in base of the type
+      var father = type == "modalList" ? this.$parent.$parent : this.$parent; //check if editor is active the editor 
+
+      if (document.getElementsByClassName("editableBorder")[0] != undefined) {
+        var modifiedItem = document.getElementsByClassName("editableBorder")[0]; //let currentDisplayedArray=type=='modalList' ? 'listOfLists': 'listOfTasks'
+
+        var listToModified = type == 'modalList' ? 'listOfLists' : 'listOfTasks'; //let currentIndex=modifiedItem.parentElement.tabIndex
+
+        var elementIndex = modifiedItem.parentElement.tabIndex;
+        var propertyToModify = type == 'modalList' ? 'list_name' : 'task'; //let backupList=type=='modalList' ? 'listOfListsBackup':
+
+        var modificationList = type == 'modalList' ? 'modifiedLists' : 'modifiedTasks'; //get the id of the currente element to modify
+
+        var elementId = modifiedItem.parentElement.id; // save changes in local variables
+
+        father.saveChanges(elementIndex, elementId, listToModified, propertyToModify, modifiedItem.textContent);
+      }
+    },
+
+    /**
+     * Create a range and selection from the current editable item and focus the caret at the end
+     * @param {Object} item - HTML element 
+     */
+    caretInLastCharacter: function caretInLastCharacter(item) {
+      var range = document.createRange();
+      var selection = window.getSelection();
+      range.setStart(item.childNodes[0], item.textContent.length);
+      range.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      item.focus();
+    },
+
+    /**
+     * Activate editor in item and adjust styles and decide when save changes 
+     * @param {Object} e - event from element 
+     * @param {String} type - Indicate if is list of list or list of tasks
+     */
+    editItem: function editItem(e, type) {
+      //get item from event
+      var item = e.target.nextElementSibling.children[0]; //save value of the item 
+
+      this.previousString = item.textContent;
+      var father = type == "modalList" ? this.$parent.$parent : this.$parent; //check if the class of editor is active 
+
+      if (document.getElementsByClassName("editableBorder")[0] != undefined) {
+        //element can be empty so if is empty we return his last saved value
+        if (father.itemInEdition.textContent.match(/.*\S.*/g) === null) {
+          //we reset the previus value in the list in order to avoid errors
+          father.itemInEdition.textContent = father.itemTextEdit; //save chenges in list of list if input is diferente from the last saved change and list of task, except for example list
+        } else if (father.itemTextEdit != father.itemInEdition.textContent) {
+          father.displaySection != 'example' ? this.saveChangesList(type) : '';
+        }
+      } //save last modification and the element
+
+
+      father.itemTextEdit = item.textContent.slice(0);
+      father.itemInEdition = item;
+      item.style.border = ""; //make sure that is only editor active
+
+      this.onlyOneEditable(item); //we close more information 
+
+      this.show = false; //change styles
+
+      item.className = item.className.match(/editableBorder/g) ? 'itemText editable' : 'itemText editable editableBorder'; //item.classList.toggle("editableContainer")
+
+      item.parentElement.className = item.parentElement.className.match(/editableContainer/g) ? 'noOutliner' : 'noOutliner editableContainer';
+      e.target.className = e.target.className == "far fa-edit" ? "fas fa-edit popAnimation" : "far fa-edit";
+      item.style.overflowY = item.contentEditable == 'false' ? 'auto' : '';
+      item.contentEditable = item.contentEditable == 'false' ? 'true' : 'false'; //set the caret after the last elemet when has at least one character
+
+      if (item.textContent.length > 0) {
+        //create a range and selection  
+        this.caretInLastCharacter(item);
+      } //click over over the paragraph editable to be able to edit and focus cursor directly to start to type
+
+
+      item.focus();
+    },
+
+    /**
+     * Handle and give time to finish the animation when display all information 
+     * @param {Object} e - Event from element clicked
+     * @param {String} type - Indicate if is list of list or list of tasks
+     * @param {Boolean} clikedElementIsDate - Indicate if event was clicked was a date 
+     */
+    showAllInformationChecker: function showAllInformationChecker(e, type, clikedElementIsDate) {
+      var _this = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                if (!_this.animationInProcess) {
+                  _this.animationInProcess = true;
+
+                  _this.showAllInformation(e, type, clikedElementIsDate);
+
+                  setTimeout(function () {
+                    _this.animationInProcess = false;
+                  }, 350);
+                }
+
+              case 1:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }))();
+    },
+
+    /**
+     * Display hidden element with additonal information of the item (date of creation and when was finished)
+     * @param {Object} e - Event from element clicked
+     * @param {String} type - Indicate if is list of list or list of tasks
+     * @param {Boolean} clikedElementIsDate - Indicate if event was clicked was a date 
+     * @param {Boolean} - new animation status
+     */
+    showAllInformation: function showAllInformation(e, type, clikedElementIsDate) {
+      var _this2 = this;
+
+      //set a shortcut for the vue object father
+      var father = type == "modalList" ? this.$parent.$parent : this.$parent; //get the item element and make sure that is the correct element
+
+      var item = clikedElementIsDate ? e.target.previousElementSibling : e.target; //get editor icon and data from the item 
+
+      var editorIcon = item.parentElement.previousSibling.previousElementSibling;
+      var id = item.parentElement.id;
+      var index = item.parentElement.tabIndex; // only can show extra information when editor is not active and is a task and his content is not empty
+
+      if (editorIcon.className.match(/far fa-edit/g) && type != "modalList" && item.textContent.length > 0) {
+        //if show the informatiom 
+        if (!this.show) {
+          //first we show the full content
+          this.show = true; //second we adjist fit the height of the paragrah
+
+          item.classList.toggle("showItem"); //then we change the height 
+
+          item.parentElement.classList.add("efectText");
+        } else {
+          //first we remove the max height 
+          item.parentElement.classList.toggle("efectText"); //after we remove the date of creation
+
+          setTimeout(function () {
+            _this2.show = false;
+            item.classList.toggle("showItem");
+          }, 350);
+        } //when you are in list of list we only can select a list if value is not empty and editor is not active
+
+      } else if (editorIcon.className.match(/far fa-edit/g) && e.target.textContent.length > 0) {
+        //we check if editor has enable and if the user click over other list we save the changes
+        father.itemInEdition == '' || father.itemInEdition.textContent.length > 0 ? this.saveChangesList(type) : ''; //if some value is empty you can not select any list and you can select any list if you are saving data in database
+
+        if (this.checkEmptyValues() && father.notSavingChanges) {
+          father.setList(id, index, item.textContent);
+        }
+      }
+    },
+
+    /**
+     * Check and limit the number of characters allowed in the item 
+     * @param {Object} e - Event from element clicked
+     * @param {String} type - Indicate if is list of list or list of tasks 
+     */
+    checkLenghtAndPaste: function checkLenghtAndPaste(e, type) {
+      var plainTextTyped = e.target.textContent;
+      var maxLength = type == 'modalList' ? 45 : 255;
+      var newAllowedString = plainTextTyped; //Allways change the inner html to avoid html insertiom
+
+      console.log(e.target.innerHTML); //check if length is correct and handle the number of char paste
+
+      if (plainTextTyped.length > maxLength) {
+        //resize the string and set in the new value in the current editor
+        plainTextTyped = plainTextTyped.slice(0, maxLength);
+        newAllowedString = this.previousString;
+        e.target.innerHTML = e.inputType == 'insertFromPaste' ? plainTextTyped : newAllowedString; //focus caret at the end
+
+        this.caretInLastCharacter(e.target);
       }
 
-      this.debug("show", "yes");
-    },
-    checkLenght: function checkLenght(e) {
-      var value = e.target.textContent;
-      console.log(value);
-    },
-    deleteItem: function deleteItem(e) {
-      console.log("delete");
-    },
-    checkItem: function checkItem(e) {
-      console.log("check"); //this.shadow=this.shadow=="" ? '0 0 1.5px rgb(30, 9, 255,0.5)' : '';
+      if (e.inputType == 'insertFromPaste') {
+        e.target.innerHTML = plainTextTyped; //focus caret at the end
 
-      this.starColor = this.starColor == 'yellow' ? 'red' : 'yellow';
-      this.newStatus = this.newStatus == 'finished' ? 'finish' : 'finished';
+        this.caretInLastCharacter(e.target);
+      } //use a regex to know if user insert a new paragraph 
+
+
+      if (/<div>.*<\/div>/.test(e.target.innerHTML)) {
+        // avoid add the paragraph
+        e.target.innerHTML = this.previousString;
+        newAllowedString = this.previousString; //close automatically the editor
+
+        e.target.parentElement.previousElementSibling.click();
+      } //save previous string
+
+
+      this.previousString = newAllowedString;
+    },
+
+    /**
+     * Handle deletion of the current item from the current list and make sure that the change is apply in all variables 
+     * @param {Object} e - Event from element clicked
+     * @param {String} type - Indicate if is list of list or list of tasks  
+     */
+    deleteItem: function deleteItem(e, type) {
+      var _this3 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        var father, index, id, currentList;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                //get data from the current item 
+                father = type == "modalList" ? _this3.$parent.$parent : _this3.$parent;
+                index = e.target.previousElementSibling.tabIndex;
+                id = e.target.previousElementSibling.id;
+                currentList = type == 'modalList' ? 'listOfLists' : 'listOfTasks'; //only delete list/tasks when you are not in edit mode
+
+                if (!(document.getElementsByClassName("editableBorder")[0] == undefined)) {
+                  _context2.next = 21;
+                  break;
+                }
+
+                if (!(e.target.previousElementSibling.children[0].textContent.length > 0)) {
+                  _context2.next = 13;
+                  break;
+                }
+
+                //save data from the item in variables of vue parent
+                father.currentId = parseFloat(id);
+                father.currentItem = index;
+                father.messageAlert2 = type == 'modalList' ? 'the list?' : 'the task?'; //display alert to confirm delete the item 
+
+                father.showAlert = true; //change opacity of modal 
+
+                setTimeout(function () {
+                  document.getElementsByClassName("alertContainer")[0].style.opacity = "1";
+                }, 10);
+                _context2.next = 21;
+                break;
+
+              case 13:
+                if (!(father.displaySection != 'example')) {
+                  _context2.next = 20;
+                  break;
+                }
+
+                //deleted directly the item 
+                // remove the item from the list if are empty     
+                father[currentList].splice(index, 1); //refresh the items to avoid error in the displayed list
+
+                _context2.next = 17;
+                return father.refreshList(currentList, father[currentList].slice(0));
+
+              case 17:
+                //check and modfy status if delete a item in list of task 
+                type != "modalList" ? father.checkAndModifyStatusList() : '';
+                _context2.next = 21;
+                break;
+
+              case 20:
+                //Delete a empty task in example list 
+                father.exampleData.splice(index, 1);
+
+              case 21:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }))();
+    },
+
+    /** 
+     * Handle the status of the current item saving the changes in the corresponding variables and set the correct styles 
+     * @param {Object} e - Event from element clicked
+     * @param {String} type - Indicate if is list of list or list of tasks 
+     */
+    ChangeStatus: function ChangeStatus(e, type) {
+      var _this4 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
+        var selectedItem, id, index, date, time, newDate;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                //get item 
+                selectedItem = e.target.previousElementSibling.previousElementSibling; //Only can change the status in the list of task and this must not be empty
+
+                if (!(type != 'modalList' && selectedItem.children[0].textContent != "")) {
+                  _context3.next = 18;
+                  break;
+                }
+
+                //check star style and change it
+                _this4.starColor = _this4.starColor == 'yellow' ? 'red' : 'yellow';
+                _this4.newStatus = _this4.newStatus == 'finished' ? 'unfinished' : 'finished'; //get current id and index
+
+                id = selectedItem.id;
+                index = selectedItem.tabIndex; //change the states create a date and time
+
+                date = new Date();
+                time = date.toLocaleTimeString().match(/\d+:\d{2}/g)[0];
+                newDate = _this4.newStatus == 'finished' ? date.toISOString().slice(0, 10) + "|" + time : '';
+
+                if (!(_this4.$parent.displaySection == 'list')) {
+                  _context3.next = 17;
+                  break;
+                }
+
+                _context3.next = 12;
+                return _this4.$parent.saveChanges(index, id, "listOfTasks", "finished", newDate);
+
+              case 12:
+                _context3.next = 14;
+                return _this4.$parent.saveChanges(index, id, "listOfTasks", "status", _this4.newStatus);
+
+              case 14:
+                _this4.$parent.checkAndModifyStatusList();
+
+                _context3.next = 18;
+                break;
+
+              case 17:
+                //apply changes local for the example list 
+                _this4.$parent.exampleData[index].finished = newDate;
+
+              case 18:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }))();
     }
   },
   components: {
-    "button-component": _ButtonComponent__WEBPACK_IMPORTED_MODULE_0__["default"]
+    "button-component": _ButtonComponent__WEBPACK_IMPORTED_MODULE_1__["default"]
   }
 });
 
@@ -252,9 +730,31 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _ItemComponent__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ItemComponent */ "./resources/js/components/ItemComponent.vue");
-/* harmony import */ var _MenuComponent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./MenuComponent */ "./resources/js/components/MenuComponent.vue");
-/* harmony import */ var _LoginComponent__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./LoginComponent */ "./resources/js/components/LoginComponent.vue");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _AlertComponent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AlertComponent */ "./resources/js/components/AlertComponent.vue");
+/* harmony import */ var _ItemComponent__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ItemComponent */ "./resources/js/components/ItemComponent.vue");
+/* harmony import */ var _MenuComponent__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./MenuComponent */ "./resources/js/components/MenuComponent.vue");
+/* harmony import */ var _LoginComponent__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./LoginComponent */ "./resources/js/components/LoginComponent.vue");
+/* harmony import */ var _ModalComponent__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./ModalComponent */ "./resources/js/components/ModalComponent.vue");
+
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 //
 //
 //
@@ -274,60 +774,745 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
+  created: function created() {
+    this.getCookieAndSetBackup();
+  },
   mounted: function mounted() {
-    this.$parent.debug("status", "mounted");
-    var isAndroid = navigator.userAgent.toLowerCase().indexOf("android") > -1; //&& ua.indexOf("mobile");
+    var _this = this;
 
-    if (isAndroid) {
-      document.write('<meta name="viewport" content="width=device-width,height=' + window.innerHeight + ', initial-scale=1.0">');
-    }
+    //check the height and adjust
+    this.adjustHeight();
+    window.addEventListener("resize", function () {
+      _this.adjustHeight();
+    });
   },
   data: function data() {
     return {
-      debug: this.$parent.debug,
-      test: "juan ",
-      headerList: "Example List",
+      addedList: -1,
+      addedTask: -1.1,
+      currentFocus: document.getElementsByTagName("body")[0],
+      currentId: 0,
+      currentItem: 0,
+      currentListId: '',
+      currentListIndex: '',
+      currentSection: 'example',
+      deletedLists: [],
+      deletedTasks: [],
+      displaySection: 'example',
+      exampleData: [{
+        id: 1,
+        task: 'Finish homerwork 💻',
+        list_id: 0,
+        status: 'finished',
+        created: "2020-09-08|10:00",
+        finished: '2020-09-08|12:00'
+      }, {
+        id: 2,
+        task: 'Clean dishes 😫',
+        list_id: 0,
+        status: 'finished',
+        created: "2020-09-08|11:10",
+        finished: '2020-09-08|11:50'
+      }, {
+        id: 3,
+        task: 'Go to Town Center 🏃',
+        list_id: 0,
+        status: 'finished',
+        created: "2020-09-08|12:40",
+        finished: '2020-09-08|13:00'
+      }, {
+        id: 4,
+        task: 'Eat a ice cream with my girlfriend 🤤🍦',
+        list_id: 0,
+        status: 'finished',
+        created: "2020-09-08|14:00",
+        finished: '2020-09-08|15:00'
+      }, {
+        id: 5,
+        task: 'Watch a movie 😂🤣',
+        list_id: 0,
+        status: 'finished',
+        created: "2020-09-08|17:30",
+        finished: '2020-09-08|19:30'
+      }, {
+        id: 6,
+        task: 'Organize a new day... 😎',
+        list_id: 0,
+        status: 'unfinished',
+        created: "2020-09-08|21:00",
+        finished: ''
+      }],
+      headerList: "Example list 🗒️",
+      idsOfSavedListInDB: [],
+      itemInEdition: '',
+      itemTextEdit: '',
+      listOfLists: [],
+      listOfListsBackup: [],
+      listOfTasks: [],
+      listOfTasksBackup: [],
+      listOfTasksLocalBackup: [],
+      localBackupTaskIndex: false,
+      loggedIn: false,
+      loginIcon: 'login',
       loginPosition: "0",
-      registerPosition: "0",
+      loginToltip: "Sign in",
       menuDisplayed: false,
       menuIcon: 'menu',
-      loginIcon: 'login',
-      registerIcon: 'register',
       menuToltip: 'Display menu',
-      loginToltip: "Sign in",
-      currentSection: 'example',
-      displaySection: 'example',
-      data: [{
-        task: 'Scary Movie',
-        status: 'finished',
-        created: '2019-06-91',
-        finished: '2020-09-12'
-      }, {
-        task: 'Doris',
-        status: 'finished',
-        created: '2019-06-91',
-        finished: '2020-09-12'
-      }, {
-        task: 'nemo',
-        status: 'finished',
-        created: '2019-06-91',
-        finished: '2020-09-12'
-      }, {
-        task: 'doris2',
-        status: 'finished',
-        created: '2019-06-91',
-        finished: '2020-09-12'
-      }]
+      messageAlert: 'Are sure to delete',
+      messageAlert2: "the list?",
+      modifiedLists: [],
+      modifiedTasks: [],
+      notSavingChanges: true,
+      notTyped: true,
+      numberChangesNotSavedInDB: 0,
+      registerIcon: 'register',
+      registerPosition: "0",
+      registerToltip: "Sing Up",
+      rke: null,
+      showAlert: false,
+      showModal: false,
+      titleAlert: "fas fa-bell",
+      ude: null
     };
   },
   methods: {
-    newTest: function newTest() {
-      console.log(this.test);
+    /**
+     * Display a customize console log with sintax Lable : message / variable
+     * @param {String} label - Label this will be print in yellow color to identify more quickly and add automatically ":" symbol
+     * @param {(*)} message - Mensaje / variable printed is displayed in color white
+     * @returns {String} Console log customized 
+     */
+    debug: function debug(label, message) {
+      var Label = label[0].toUpperCase() + label.slice(1);
+      return typeof message == "string" ? console.log("%c ".concat(Label, ": %c").concat(message), "color:yellow", "color:cyan") : console.log("%c ".concat(Label, ":"), "color:white", message);
     },
+
+    /**
+     * Handle the status of the current list when user delete / modifify a task
+    */
+    checkAndModifyStatusList: function checkAndModifyStatusList() {
+      //STEP 1 Check if teh list has more than one task 
+      var sizeOfList = this.listOfTasks.length;
+      var currentStatus = this.listOfLists[this.currentListIndex].status;
+      var newStatus = sizeOfList > 0 && this.listOfTasks.find(function (task) {
+        return task.status == "unfinished";
+      }) == undefined ? 'finished' : 'unfinished';
+
+      if (currentStatus != newStatus) {
+        //Declare and get the current date and hour
+        var date = new Date();
+        var time = date.toLocaleTimeString().match(/\d+:\d{2}/g)[0];
+        var newDate = newStatus == 'finished' ? date.toISOString().slice(0, 10) + "|" + time : ''; //Change status of status and finished date
+
+        this.saveChanges(this.currentListIndex, this.currentListId, "listOfLists", "status", newStatus);
+        this.saveChanges(this.currentListIndex, this.currentListId, "listOfLists", "finished", newDate);
+      }
+    },
+
+    /** 
+    * Handles changes made to task / list and saves them to local variables and browser storage
+    * @param {(Number|String)} index - TabIndex from the current element 
+    * @param {(Number|String)} id - Id unique from each element
+    * @param {String} listToModified - Name of array of list / task to modify
+    * @param {String} propertyToModify - Property of the object task / list to change 
+    * @param {String} newValue - Value that replaces the current value
+    */
+    saveChanges: function saveChanges(index, id, listToModified, propertyToModify, newValue) {
+      var _this2 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        var modificationIndex, currentItem, itemDisplayed, itemInDB, backupIndex, itemId, modificationList;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                //STEP ONE Change the current value in displayed list
+                _this2[listToModified][index][propertyToModify] = newValue; //This line is to make see reactivity correctly
+
+                if (propertyToModify == "list_name" || propertyToModify == "task") {
+                  document.getElementsByClassName("editableBorder")[0].textContent = newValue;
+                } //STEP TWO Check if has been modified the item and get the index of the modificaion list 
+
+
+                modificationIndex = _this2.hasBeenModifiedThisItem(id, listToModified == 'listOfLists' ? true : false); //STEP THREE Get the current item and check if the current item is stored in database
+                //declare the current object item, and the same we save as string and the varible for the item in database
+
+                currentItem = _this2[listToModified][index];
+                itemDisplayed = JSON.stringify(currentItem);
+                itemInDB = ''; //search if the item to modified in array with the items is stored in DB and saved in itemInDB
+
+                if (listToModified == 'listOfLists') {
+                  itemInDB = _this2.listOfListsBackup.find(function (item) {
+                    return item.list_id == id;
+                  }) != undefined ? _this2.listOfListsBackup.find(function (item) {
+                    return item.list_id == id;
+                  }) : '';
+                } else {
+                  backupIndex = _this2.listOfTasksBackup.length > 0 ? _this2.listOfTasksBackup.findIndex(function (item) {
+                    return item[0].list_id == _this2.currentListId;
+                  }) : undefined;
+
+                  if (backupIndex >= 0) {
+                    itemInDB = _this2.listOfTasksBackup[backupIndex].find(function (item) {
+                      return item.task_id == id;
+                    }) != undefined ? _this2.listOfTasksBackup[backupIndex].find(function (item) {
+                      return item.task_id == id;
+                    }) : '';
+                  }
+                }
+
+                itemInDB = JSON.stringify(itemInDB);
+                itemId = listToModified == 'listOfLists' ? 'list_id' : 'task_id'; //STEP FOUR We compare both item objects in order to know if are equal or not, and if the id is less than 0 
+
+                modificationList = listToModified == 'listOfLists' ? 'modifiedLists' : 'modifiedTasks';
+
+                if (modificationIndex === false) {
+                  //if index is less than one means that item is new and is added into the list or if the value is diferent from the original
+                  currentItem[itemId] < 0 || itemInDB != itemDisplayed ? _this2[modificationList].push(currentItem) : '';
+                } else {
+                  // when the item has already modified we check remplace the information if are new new item and we deleted of the list if are al ready in the list and have the same value
+                  currentItem[itemId] >= 0 && itemInDB == itemDisplayed ? _this2[modificationList].splice(modificationIndex, 1) : _this2[modificationList][modificationIndex] = currentItem;
+                } //STEP FIVE Save changes in local variables and the local storage from the navigator 
+
+
+                _context.next = 13;
+                return _this2.saveLocalTasks();
+
+              case 13:
+                _context.next = 15;
+                return _this2.saveChangesInNavigator();
+
+              case 15:
+                return _context.abrupt("return", true);
+
+              case 16:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }))();
+    },
+
+    /**
+     * Saves tasks / list with all modifications to local storage that has not yet been saved by user
+    */
+    saveChangesInNavigator: function saveChangesInNavigator() {
+      //save all changes in 
+      var changesToSaveInLocalStorage = {
+        addedList: this.addedList,
+        addedTask: this.addedTask,
+        modifiedLists: this.modifiedLists,
+        deletedLists: this.deletedLists,
+        listOfLists: this.listOfLists,
+        modifiedTasks: this.modifiedTasks,
+        deletedTasks: this.deletedTasks,
+        listOfTasksLocalBackup: this.listOfTasksLocalBackup
+      }; //save the object in the local storage of the current navigator
+
+      localStorage.setItem('localChanges', JSON.stringify(changesToSaveInLocalStorage));
+      return true;
+    },
+
+    /**
+     * get and apply localChanges saved in local storage in browser
+     */
+    applyChanges: function applyChanges() {
+      //we apply all the changes not saved in database
+      //get the changes saved in local storage
+      var localChanges = JSON.parse(localStorage.getItem('localChanges'));
+
+      if (localChanges) {
+        //we assign all the local change in the current variables
+        this.addedList = localChanges.addedList, this.addedTask = localChanges.addedTask, this.modifiedLists = localChanges.modifiedLists;
+        this.modifiedTasks = localChanges.modifiedTasks, this.deletedLists = localChanges.deletedLists;
+        this.deletedTasks = localChanges.deletedTasks, this.listOfTasksLocalBackup = localChanges.listOfTasksLocalBackup; //we refresh the current list of list, we delete all lists and after we push every list
+
+        this.refreshList('listOfLists', localChanges.listOfLists);
+      }
+    },
+
+    /**
+     * Save the array with the current list of tasks in local storage
+     */
+    saveLocalTasks: function saveLocalTasks() {
+      var _this3 = this;
+
+      var index = false;
+      var listToSave = this.listOfTasks.slice(0); // get the index of the current list if exits 
+
+      this.listOfTasksLocalBackup.forEach(function (list, i) {
+        if (list.length > 0 && _this3.currentListId == list[0].list_id) {
+          index = i;
+        }
+      }); // we can only modified when the list exist and push when lenght is more than one because in deleted function we remove list from local backup
+
+      if (listToSave.length > 0) {
+        //we push or modified if list are save
+        index !== false ? this.listOfTasksLocalBackup[index] = listToSave : this.listOfTasksLocalBackup.push(listToSave);
+      }
+
+      return true;
+    },
+
+    /**
+     * Remove all item from the display list 
+     * @param {Array<{listOrTaskProperties:(String|Number)}>} listToDelete - Array with the current List of tasks
+     */
+    deleteAll: function deleteAll(listToDelete) {
+      while (listToDelete.length != 0) {
+        listToDelete.pop();
+      }
+
+      return true;
+    },
+
+    /**
+     * Handle correctly the actions of pop and push to show the expected reactivity on teh current list 
+     * @param {Array<{listOrTaskProperties:(String|Number)}>} listToRefresh - Array of task / list that will be deleted with pop
+     * @param {Array<{listOrTaskProperties:(String|Number)}>} listToDisplay - Array of task / list that will be pushed and contain the changes apply 
+    */
+    refreshList: function refreshList(listToRefresh, listToDisplay) {
+      var _this4 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _context2.next = 2;
+                return _this4.deleteAll(_this4[listToRefresh]);
+
+              case 2:
+                //Push every item in the new list this will be displayed  
+                listToDisplay.forEach(function (item) {
+                  _this4[listToRefresh].push(item);
+                }); //Save changes in local storage
+
+                _context2.next = 5;
+                return _this4.saveLocalTasks();
+
+              case 5:
+                _this4.saveChangesInNavigator();
+
+                return _context2.abrupt("return", true);
+
+              case 7:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }))();
+    },
+
+    /**
+     * Handle the aditon of list / task in the current list
+     * @param {Boolean} isTask - Indicates that a task is added or not
+     */
+    addItemToList: function addItemToList(isTask) {
+      var items = document.getElementsByClassName("editable"); //get and check if editor is active
+
+      var editorIsNotActive = document.getElementsByClassName("editableBorder").length == 0; //Additon is allowed when list are empty or if the last task are not empty
+
+      if (items.length == 0 || items[items.length - 1].textContent && editorIsNotActive) {
+        //Get the time of creation
+        var date = new Date();
+        var time = date.toLocaleTimeString().match(/\d+:\d{2}/g)[0];
+        var dateAndTime = date.toISOString().slice(0, 10) + "|" + time; //Add the correspond item into the local variables
+
+        if (isTask) {
+          //New task to create
+          var newTask = {
+            task_id: this.addedTask,
+            task: '',
+            list_id: this.currentListId,
+            status: 'unfinished',
+            created: dateAndTime,
+            finished: ''
+          }; //Add the new task in correspond varible for each list 
+
+          this.displaySection != 'example' ? this.listOfTasks.push(newTask) : this.exampleData.push(newTask); //Counter to the creation order
+
+          this.addedTask = this.addedTask - 1;
+        } else {
+          //Create new list, push in the variable 
+          var newList = {
+            list_id: this.addedList,
+            list_name: '',
+            status: 'unfinished',
+            created: dateAndTime,
+            finished: ''
+          };
+          this.listOfLists.push(newList);
+          this.addedList = this.addedList - 1;
+        } //changes apply in example list when user add
+
+
+        if (this.displaySection != 'example') {
+          //Save changes in local storage
+          this.saveLocalTasks();
+          this.saveChangesInNavigator(); //update the status of the list if add a new task
+
+          isTask ? this.checkAndModifyStatusList() : '';
+        } //we scroll down in the list
+
+
+        setTimeout(function () {
+          document.getElementsByClassName(isTask ? 'fade' : 'modalBody')[0].scrollTo({
+            top: 10000,
+            left: 0,
+            behavior: 'smooth'
+          });
+        }, 10); //get all editor icons in html document
+
+        var editorIconElementsList = document.getElementsByClassName("fa-edit"); //wait 10 ms to make sure that new item is added in DOM to be able to select it
+
+        setTimeout(function () {
+          //We active editor of the new element created to be more fluid user exprience
+          editorIconElementsList[editorIconElementsList.length - 1].click();
+        }, 10);
+      }
+    },
+
+    /**
+     * Disable and active saveButton to avoid multiple request and set process animation, and also handle the visibility of the menu button 
+     * @param {Boolean} disable - Status of save button to handle the style changes
+     */
+    disabledSaveButton: function disabledSaveButton(disable) {
+      //we block all functionalities from the list to avoid conflicts
+      this.notSavingChanges = !disable; //we get the save button element
+
+      var buttonSave = disable ? document.getElementsByClassName("fa-save")[this.showModal ? 1 : 0] : document.getElementsByClassName("fa-spin")[this.showModal ? 1 : 0].parentElement; //we disable/active save button and set animation 
+
+      buttonSave.disabled = disable;
+      buttonSave.classList = disable ? "buttonBlue far" : "buttonBlue far fa-save";
+      buttonSave.children[0].style.display = disable ? "block" : "none";
+    },
+
+    /**
+     * Handle to save modifications of all list in database, contained in arrays following[modifiedLists/modifiedTasks] and [deletedLists/deletedTasks]
+     * @param {String} urlRequest - This url is to make a request to ListTableController / TaskTableController 
+     * @param {String} listModifiedItems - Name of array with the modifications of lists / tasks
+     * @param {String} listDeletedItems - Name of array with the of the lists / tasks deleted
+     * @param {String} listOfElements - Name of array of List / tasks displayed in view 
+     */
+    saveChangesInDB: function saveChangesInDB(urlRequest, listModifiedItems, listDeletedItems, listOfElements) {
+      var _this5 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
+        var deletedItems, changesToApplyDB;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                _this5.disabledSaveButton(true); //We check if exits modifications on the item saved in database
+
+
+                if (!(_this5[listModifiedItems].length || _this5[listDeletedItems].length)) {
+                  _context3.next = 8;
+                  break;
+                }
+
+                //get only id of deleted tasks
+                deletedItems = listOfElements == 'listOfLists' ? _this5[listDeletedItems] : _this5[listDeletedItems].map(function (deletedTask) {
+                  return deletedTask.taskId;
+                });
+                changesToApplyDB = {
+                  modifiedItems: _this5[listModifiedItems],
+                  deletedItems: deletedItems,
+                  ude: _this5.ude,
+                  rke: _this5.rke
+                }; //start request with the select url to save modificaions in list table or user task table
+
+                _context3.next = 6;
+                return axios.post(urlRequest, changesToApplyDB).then(function (response) {
+                  var status = response.data; //check the status retuned in the response with regex
+
+                  var regex = /^(empty|ok)$/g; //we check if all sql operations were executed succefully
+
+                  if (status[0].match(regex) && status[1].match(regex) && status[2].match(regex)) {
+                    //reset the values of list of modifications and deleted arrays
+                    _this5[listModifiedItems] = [];
+                    _this5[listDeletedItems] = []; //we use JSON methods to convert the string into a correct object variable and make it immutable
+
+                    _this5[listOfElements + "Backup"] = JSON.parse(JSON.stringify(status[3])); //refresh DOM with the news elements id and the counter of new task / list
+
+                    if (listOfElements == "listOfLists") {
+                      //Reset list counter 
+                      _this5.addedList = -1; //Update DOM to see the id in data base in new elements
+
+                      _this5.refreshList(listOfElements, status[3].slice(0)); //We changes the id of all task created before to save in DB
+                      //Save all id of the list saved in database
+
+
+                      _this5.idsOfSavedListInDB = response.data[4].reverse(); //we remplace the list_id of all task created to be able to saved in data base
+
+                      _this5.listOfTasksLocalBackup.forEach(function (list, i) {
+                        list.forEach(function (task, index) {
+                          if (task.list_id[0] == "-") {
+                            var indexWithNewId = task.list_id * -1 - 1;
+                            var newIdList = _this5.idsOfSavedListInDB[indexWithNewId];
+                            task.list_id = newIdList;
+                          }
+                        });
+                      });
+
+                      if (status[3] = []) {
+                        //we delete all task in backup saved local storage and local when all list are deleted
+                        _this5.listOfTasksBackup = [];
+                      }
+
+                      _this5.disabledSaveButton(false);
+
+                      _this5.saveChangesInDB('/api/saveModificationsToUserTasks', 'modifiedTasks', 'deletedTasks', 'listOfTasks');
+                    } else if (listOfElements == "listOfTasks") {
+                      _this5.addedTask = -1.1;
+
+                      _this5.disabledSaveButton(false); //Update the current list of task when a list of task is displyed s
+
+
+                      if (!_this5.showModal) {
+                        _this5.refreshList(listOfElements, status[3][_this5.currentListIndex].slice(0));
+                      } //we save the new data from database in listOfTasksLocalBackup
+
+
+                      _this5.listOfTasksLocalBackup = status[3].slice(0);
+                    } //Save changes in local storage to save the new ids of the list in the navigator
+
+
+                    _this5.saveChangesInNavigator();
+                  } else {
+                    if (listOfElements == "listOfTasks") {
+                      //if task are not saved we change the id of all task created to be able to make sure that next time will be saved corrctly 
+                      //code to change all id_list from the backup list and save changes
+                      //Display modal try later error in server 
+                      _this5.listOfTasksLocalBackup.forEach(function (list, i) {
+                        list.forEach(function (task, index) {
+                          if (task.list_id[0] == "-") {
+                            var indexWithNewId = task.list_id * -1 - 1;
+                            var newIdList = _this5.idsOfSavedListInDB[indexWithNewId];
+                            task.list_id = newIdList;
+                          }
+                        });
+                      });
+
+                      _this5.saveChangesInNavigator();
+                    }
+
+                    console.log("error in the server!");
+
+                    _this5.disabledSaveButton(false);
+                  }
+                })["catch"](function (error) {
+                  console.log(error);
+                });
+
+              case 6:
+                _context3.next = 10;
+                break;
+
+              case 8:
+                //When you don't have list modifications you call again the function
+                _this5.disabledSaveButton(false);
+
+                listOfElements == "listOfLists" ? _this5.saveChangesInDB('/api/saveModificationsToUserTasks', 'modifiedTasks', 'deletedTasks', 'listOfTasks') : '';
+
+              case 10:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }))();
+    },
+
+    /**
+     * Display in view all the task from the current list, and save information of the selected list in local variables
+     * @param {(Number|String)} listId - Id of the selected list
+     * @param {(Number|String)} listIndex - Index of the selected list
+     * @param {(Number|String)} listName - Name of the selected list
+     */
+    setList: function setList(listId, listIndex, listName) {
+      var _this6 = this;
+
+      //reset variables for editor
+      this.itemTextEdit = '';
+      this.itemInEdition = ''; //save information of the selected list
+
+      this.currentListId = listId;
+      this.headerList = listName;
+      var selectedIndex = false;
+      this.currentListIndex = listIndex; //Check if local backup is empty and find which list user select
+
+      this.listOfTasksLocalBackup.forEach(function (list, index) {
+        if (list[0] && list[0].list_id == listId) {
+          selectedIndex = index;
+          _this6.localBackupTaskIndex = index;
+        }
+      }); //here we display the selected list if exist and have one or more tasks
+
+      if (this.listOfTasksLocalBackup.length > 0 && selectedIndex !== false) {
+        //now we push every item from the selected list
+        this.listOfTasksLocalBackup[selectedIndex].forEach(function (task) {
+          _this6.listOfTasks.push(task);
+        });
+      } //we change styles to show animation for the modal 
+
+
+      document.getElementsByClassName("modalContainer")[0].style.opacity = 0;
+      setTimeout(function () {
+        _this6.showModal = false;
+      }, 500);
+    },
+
+    /**
+     * Display modal with the list of user lists
+     */
+    showList: function showList() {
+      //we reset the variable to avoid delete a list in the function saveLocalTasks()
+      //reset variables for used for editor
+      this.itemTextEdit = '';
+      this.itemInEdition = '';
+      this.localBackupTaskIndex = false; //display the list of list and apply the animation
+
+      this.showModal = true;
+      setTimeout(function () {
+        document.getElementsByClassName("modalContainer")[0].style.opacity = 1;
+      }, 10);
+      this.showMenu(); //we delete all the current name and task
+
+      this.listOfTasks.splice(0, this.listOfTasks.length);
+    },
+
+    /**
+     * Check the array of modifications of tasks / lists and look if the passed item is in the list 
+     * @param {(String|Number)} idToCheck - Id used to compare all the modified elements 
+     * @param {String} isListOfList - Name of the array with modification to search the passed id
+     * @returns {(Number|Boolean)} Index of the item found, return false is not in the list 
+     */
+    hasBeenModifiedThisItem: function hasBeenModifiedThisItem(idToCheck, isListOfList) {
+      //we declare array with modifications of tasks or lists
+      var arrayWithModifications = this[isListOfList ? 'modifiedLists' : 'modifiedTasks'];
+      var id = isListOfList ? 'list_id' : 'task_id';
+      var idInArray = false; //we check every element inside of the modifed and check if the current element has been edited before and save the index
+
+      for (var i = 0; i < arrayWithModifications.length; i++) {
+        if (arrayWithModifications[i][id] == idToCheck) {
+          idInArray = i;
+          break;
+        }
+      } //we return false if the element has not be modified before and a current index if has al ready modified
+
+
+      return idInArray;
+    },
+
+    /**
+     * Check for the user information from cookies and auth user data is correct and made login and check if have lists saved in database and saved in local variables backup, after check in local storage and check if have changes and apply in current list
+     */
+    getCookieAndSetBackup: function getCookieAndSetBackup() {
+      var _this7 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                //STEP 1 get the cookie and save as variable in object
+                _this7.ude = document.cookie.match(/(?<=ude=)[^\;]+/g) ? document.cookie.match(/(?<=ude=)[^\;]+/g)[0] : null;
+                _this7.rke = document.cookie.match(/(?<=rke=)[^\;]+/g) ? document.cookie.match(/(?<=rke=)[^\;]+/g)[0] : null; //STEP 2 valid auth and return the list view and declare a correct login 
+
+                if (!(_this7.ude && _this7.rke)) {
+                  _context4.next = 5;
+                  break;
+                }
+
+                _context4.next = 5;
+                return axios.get('/api/authUserAndGetData', {
+                  params: {
+                    ude: _this7.ude,
+                    rke: _this7.rke
+                  }
+                }).then(function (response) {
+                  //Check the response status with a regex and save status
+                  _this7.loggedIn = response.data[0].match(/Correct/g) ? (_this7.displaySection = "list", true) : false; //save data list of list 
+
+                  _this7.listOfLists = response.data[1]; //we save the list of lists database and make sure that array is inmutable
+
+                  _this7.listOfListsBackup = JSON.parse(JSON.stringify(response.data[1])); //save the lists of tasks 
+
+                  _this7.listOfTasksLocalBackup = response.data[2]; //we save the list of task database and make sure that array is inmutable
+
+                  _this7.listOfTasksBackup = JSON.parse(JSON.stringify(response.data[2]));
+                  _this7.showModal = true;
+                  setTimeout(function () {
+                    document.getElementsByClassName("modalContainer")[0].style.opacity = 1;
+                  }, 10);
+                })["catch"](function (error) {
+                  console.log(error);
+                });
+
+              case 5:
+                //remove spinner when finish to charge all data     
+                setTimeout(function () {
+                  document.getElementsByClassName("spinner")[0].style.opacity = 0;
+                  setTimeout(function () {
+                    _this7.$parent.spinner = false;
+                  }, 500);
+                }, 50); //STEP 4 check in local storage for changes not saved in list of user and apply if exists   
+
+                _this7.applyChanges();
+
+              case 7:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4);
+      }))();
+    },
+
+    /**
+     * Set and removes cookies with user data 
+     * @param {String} action - Indicate if we want to set o remove cookie
+     * @param {String} userData - User data encrypted
+     * @param {String} randomKey - Key to decode user data    
+     */
+    setAndDeleteEncryptCookie: function setAndDeleteEncryptCookie(action) {
+      var userData = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+      var randomKey = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+      var currentDate = new Date();
+      var expiration = action == "set" ? 1 : -1;
+      currentDate.setMonth(currentDate.getMonth() + expiration);
+      document.cookie = "ude=".concat(userData, ";expires=").concat(currentDate.toUTCString(), ";path='/';");
+      document.cookie = "rke=".concat(randomKey, ";expires=").concat(currentDate.toUTCString(), ";path='/';");
+      action == 'logout' ? (location.reload(), localStorage.removeItem('localChanges')) : '';
+    },
+
+    /**
+     * Dispay aplication options in floating buttons
+     */
     showMenu: function showMenu() {
       this.menuDisplayed = !this.menuDisplayed;
       this.menuIcon = this.menuDisplayed ? 'close' : 'menu';
@@ -335,114 +1520,130 @@ __webpack_require__.r(__webpack_exports__);
       this.loginPosition = this.menuDisplayed ? "1" : "0";
       this.registerPosition = this.menuDisplayed ? "2" : "0";
     },
-    register: function register() {
-      this.changeBody("register");
-      this.changeTitle(this.currentSection == "register" ? 'Example List' : 'Register');
-      this.loginToltip = this.displaySection == 'example' ? 'Example List' : 'Sign Up';
-      this.registerIcon = this.displaySection == 'example' ? 'editor' : 'register';
-      this.loginIcon = 'login';
-    },
-    login: function login() {
-      this.changeTitle(this.currentSection == "login" ? 'Example List' : 'Login');
-      this.changeBody("login");
-      this.loginToltip = this.displaySection == 'example' ? 'Example List' : 'Sign in';
-      this.loginIcon = this.displaySection == 'example' ? 'editor' : 'login';
-      this.registerIcon = 'register';
-    },
-    changeTitle: function changeTitle(newTitle) {
-      var _this = this;
 
-      //we set opacity to 0 and after change the title and set again the opacity
+    /**
+     * Handle the changes of the title and body displayed in view and floating buttons, and makes sure of change styles correctly of them 
+     * @param {String} selectedSection - Is the new section to display (login|register)
+     * @param {String} titleSection - Header of list to display (Login|Register)
+     * @param {String} toltipSection - Toltip to show in overmouse in floating buttons
+     */
+    changeBodyAndTitleOfSection: function changeBodyAndTitleOfSection(selectedSection, titleSection, toltipSection) {
+      var _this8 = this;
+
+      //STEP 1 handle the style changes on the floating buttons
+      var condition = this.currentSection != selectedSection;
+      this[selectedSection + 'Toltip'] = condition ? 'List Editor' : toltipSection;
+      this[selectedSection + 'Icon'] = condition ? 'editor' : selectedSection;
+      selectedSection == 'login' ? (this.registerIcon = 'register', this.registerToltip = 'Sing Up') : (this.loginIcon = 'login', this.loginToltip = 'Sing In'); //Check and select the seccion Body and title to display
+
+      var newBody = condition ? selectedSection : "example";
+      var newTitle = condition ? titleSection : "Example List"; //STEP 2 Add the animation of the title setting the opacity in 0
+
       document.getElementsByClassName("title")[0].style.opacity = 0;
+      document.getElementById(this.displaySection).style.opacity = 0; //Change current section and close menu buttons
+
+      this.currentSection = newBody;
+      this.showMenu(); //we wait to finish hide animation 
+
       setTimeout(function () {
-        _this.headerList = newTitle;
-        document.getElementsByClassName("title")[0].style.opacity = 1;
+        //STEP 3 Change the current title and body of list 
+        _this8.headerList = newTitle;
+        _this8.displaySection = newBody; //we wait to active the show animation 
+
+        setTimeout(function () {
+          //STEP 4 Active animation when change opacity and adjust heigth 
+          document.getElementsByClassName("title")[0].style.opacity = 1;
+          document.getElementById(newBody).style.opacity = 1;
+
+          _this8.adjustHeight(); //reset all inputs in value and style 
+
+
+          var currentInputs = _toConsumableArray(document.getElementsByTagName("input"));
+
+          currentInputs.forEach(function (input) {
+            input.onpaste = function (e) {
+              return e.preventDefault();
+            };
+
+            input.value = "";
+            input.nextElementSibling.style.opacity = 0;
+            input.style.borderColor = "rgb(155, 150, 240)";
+          });
+        }, 10);
       }, 250);
     },
-    changeBody: function changeBody(idToDisplay) {
-      console.log(this.currentSection);
-      this.currentSection = idToDisplay;
-      setTimeout(function () {}, 250); //we set opacity to 0 and after change the title and set again the opacity
 
-      /*
-      let displayed=document.getElementById(idToDisplay)
-       document.getElementById("bodyList").style.overflowY=this.displaySection!='example' ? 'scroll' : 'hidden';
-      document.getElementById("bodyList").parentElement.style.height=(this.displaySection=="example" || this.displaySection=="list") ? 'fit-content' : '100%';
-      this.debug('changebody','before if')
-      this.debug('dis',idToDisplay)
-       document.getElementById(this.currentSection).style.opacity=0
-       this.debug('changebody','afer if')
-       this.menuDisplayed=!this.menuDisplayed
-      this.menuIcon=this.menuDisplayed ? 'close' : 'menu'
-      this.loginPosition="0"
-      this.registerPosition="0"
-      setTimeout(() => {
-          this.displaySection= this.displaySection==this.currentSection ? idToDisplay : this.currentSection   
-          this.currentSection= idToDisplay
-      }, 250);                                                                                                          
-      console.log(this.displaySection)
-      */
-    },
-    animationHandler: function animationHandler() {},
-    makePost: function makePost() {
-      console.log("start a post");
-      /*
-      axios.post('/api/insert',{username:"dam",email:'damiis298@gmail.com',password:"patitas"}).then(
-          response=>{
-              console.log(response.data)
-          }
-      ).catch(error=>{console.log(error)})
-      
-      axios.get('/api/select').then(
-          response=>{
-              console.log(response)
-          }
-      ).catch(error=>{console.log(error)})
-      
-      axios.put('/api/update',{id:2,username:"dam21",email:'22damiis298@gmail.com',password:"2  patitas"}).then(
-          response=>{
-              console.log(response.data)
-          }
-      ).catch(error=>{console.log(error)})
-      axios.delete('/api/delete',{params:{id:4}}).then(
-          response=>{
-              console.log(response.data)
-          }
-      ).catch(error=>{console.log(error)})
-                 
-      axios.get('/api/select2').then(
-          response=>{
-              console.log(response)
-          }
-      ).catch(error=>{console.log(error)})
-       axios.get('/api/select2',{params:{password:"patitas"}}).then(
-          response=>{
-              console.log(response)
-          }
-      ).catch(error=>{console.log(error)})
-         axios.get('/api/check',{params:{password:"patitas2"}}).then(
-          response=>{
-              console.log(response)
-          }
-      ).catch(error=>{console.log(error)})
-      
-                */
+    /**
+     * Adjust the height of the view, and changes styles when view has some changes like keyboard, hide and show url and consider the current navigator 
+     */
+    adjustHeight: function adjustHeight() {
+      //STEP 1 Get all varaibles used as conditions to evaluated the cases of event resize
+      //Get orientation of device comparing the avail heigth and the avail width, we use this insted of innerHeight and client height because is value only changes when change the orientation of device
+      var orientationOfDevice = window.screen.availHeight > window.screen.width ? 'portrait' : 'landscape'; //Check if is a mobile device as Iphone or Android smartphone, we return boolean usig a regex function 
 
-      axios.post('/api/insert', {
-        username: "dam21",
-        email: 'd12amiis298@gmail.com',
-        password: "patitas"
-      }).then(function (response) {
-        console.log(response.data);
-      })["catch"](function (error) {
-        console.log(error);
-      });
+      var mobileDevice = /Android|iPhone/g.test(navigator.userAgent); //Calculate the diference in pixels between the size of the screen and the height of the windows
+
+      var diferenceOfPixelsInScreen = window.screen.availHeight - window.innerHeight; //We use user agent to check the current browser and select a correct parameter parameter is status bar ~25px, urlbar ~50px, options browser bar 50px, android navigation bar 50 px, and extra 50 for precaution for non counted bars 50px 
+
+      var browserParameter = /OPR/g.test(navigator.userAgent) ? 175 + 50 : /Firefox/g.test(navigator.userAgent) ? 125 + 50 : /Chrome/g.test(navigator.userAgent) ? 125 + 50 : 125 + 50; //If the diference is bigger than 100 px means that keyboars is in the screen, we asume that size of status bar and url bar together add up are less than 100px in Chrome naviagtor every navigator has diferents values 
+
+      var keyboardInScreen = diferenceOfPixelsInScreen > browserParameter; //If the diference is more than 25px (size of status bar) but less than 100px means that url bar is in the navigator
+
+      var urlBarInScreen = browserParameter > diferenceOfPixelsInScreen && diferenceOfPixelsInScreen > 25; //STEP 2 Check if you are in mobile device and adjust heigth and chang styles
+
+      if (mobileDevice) {
+        //Remove bottons when keyboard is open
+        this.notTyped = keyboardInScreen ? false : true;
+
+        if (keyboardInScreen) {
+          //we set the exact heigth in the element with id listApp
+          document.getElementById('listApp').style.height = "".concat(window.innerHeight, "px");
+
+          if (orientationOfDevice == 'landscape') {
+            //we adjust some styles to be able to use correcty the aplication with less space
+            document.getElementById("headerList").style.display = "none";
+            document.getElementById("bodyList").style.gridArea = "1/1/3/2";
+            document.getElementById("bodyList").style.borderRadius = "15px";
+            document.getElementById("bodyList").style.height = "".concat(window.innerHeight, "px");
+          }
+        } else if (urlBarInScreen) {
+          //Styles to change when url bar is displayed in navigator 
+          document.getElementById('listApp').style.height = '100vh';
+          document.getElementById("headerList").style.display = "grid";
+          document.getElementById("bodyList").style.gridArea = "2/1/3/2";
+          document.getElementById("bodyList").style.borderRadius = "0 0 15px 15px";
+          document.getElementById("bodyList").style.height = '100%';
+          document.getElementById("list").style.height = '100%';
+        } //Adjust the size of the list when keyboard is open and close and also depending of the orientation 
+
+
+        document.getElementById('list').style.height = keyboardInScreen && orientationOfDevice == 'landscape' ? "".concat(window.innerHeight, "px") : keyboardInScreen ? '' : /(login|register)/g.test(this.displaySection) && orientationOfDevice == "portrait" ? 'max-content' : ''; //Ajust the height of the modal when keyboard is open 
+
+        if (document.getElementsByClassName('modalBody')[0]) {
+          //get elements of modal to modify
+          var modalHeader = document.getElementsByClassName("headerList")[1];
+          var modalBody = document.getElementsByClassName("modalBody")[0]; //we adjust the height of the modal body to make scroll only in th body and fit perfetecly and adjust some style to better user exprience 
+
+          var modalBodyHeight = document.getElementsByClassName("modal")[0].clientHeight - modalHeader.clientHeight;
+          modalBody.style.height = keyboardInScreen && orientationOfDevice == 'landscape' ? (modalHeader.style.display = 'none', modalBody.style.paddingTop = "5px", '100%') : keyboardInScreen && orientationOfDevice == 'portrait' ? '65%' : (modalHeader.style.display = 'grid', modalBody.style.paddingTop = "", 'calc(95% - 125px)');
+        } //Handle the change of size of the list (grid rows procentage) when the navigator set or quit the url bar
+
+
+        document.getElementById('listApp').style.gridTemplateRows = /(example|list)/g.test(this.displaySection) & urlBarInScreen & orientationOfDevice == "portrait" ? '2.5% 86.5% 11%' : urlBarInScreen & orientationOfDevice == "landscape" ? '2.5% 78% 19.5%' : '2.5% 95% 2.5%';
+      } else if (/(login|register)/g.test(this.displaySection)) {
+        //Desktop adjust heigth 
+        document.getElementById("list").style.height = 'max-content';
+      } else {
+        document.getElementById("list").style.height = '100%';
+      }
     }
   },
   components: {
-    "item-component": _ItemComponent__WEBPACK_IMPORTED_MODULE_0__["default"],
-    "menu-component": _MenuComponent__WEBPACK_IMPORTED_MODULE_1__["default"],
-    "login-component": _LoginComponent__WEBPACK_IMPORTED_MODULE_2__["default"]
+    "item-component": _ItemComponent__WEBPACK_IMPORTED_MODULE_2__["default"],
+    "menu-component": _MenuComponent__WEBPACK_IMPORTED_MODULE_3__["default"],
+    "login-component": _LoginComponent__WEBPACK_IMPORTED_MODULE_4__["default"],
+    "modal-component": _ModalComponent__WEBPACK_IMPORTED_MODULE_5__["default"],
+    "alert-component": _AlertComponent__WEBPACK_IMPORTED_MODULE_1__["default"]
   }
 });
 
@@ -457,6 +1658,32 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -475,34 +1702,309 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  mounted: function mounted() {
-    this.debug("status", "mounted menu");
-  },
   props: {
     option: String,
+    positionY: String,
     toltip: String,
-    type: String,
-    positionY: String
+    type: String
   },
   data: function data() {
     return {
-      debug: this.$parent.$parent.debug,
-      usernameEmail: '',
-      userPassword: '',
-      username: '',
+      loginSuccessfully: false,
+      messageEmail: "Use format example@domain.com",
+      messagePassword: "Must contain 8-16 alphanumeric or symbols",
+      messagePasswordConfirmation: "Confirm the password",
+      messageUsername: "Starts with a letter, contain 6-16 alphanumeric",
+      messageUsernameEmail: "Must contain at least 6 letter-number or (.-_ @)",
+      password: "",
+      passwordChecked: false,
+      registerSuccesfully: false,
       userEmail: '',
-      userPasswordConfirmation: ''
+      userEmailChecked: false,
+      username: '',
+      usernameChecked: false,
+      usernameEmail: '',
+      usernameEmailChecked: false,
+      userPassword: '',
+      userPasswordChecked: false,
+      userPasswordConfirmation: '',
+      userPasswordConfirmationChecked: false
     };
   },
   methods: {
-    editItem: function editItem() {
-      console.log("edit");
+    /**
+     * disable or ativate inputs,buttons and dispaly none the fixed buttons and set a spinner
+     * @param {Boolean} disableAndHide - Especify if disable elements or active
+     * @param {String} text - Text set in button 
+     */
+    disableElements: function disableElements(disableAndHide) {
+      var text = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "&#xf1ce;";
+      //get all inputs, floating buttons and buttons 
+      var inputsButtons = [].concat(_toConsumableArray(document.getElementsByTagName("input")), _toConsumableArray(document.getElementsByTagName("button")));
+
+      var fixedButtons = _toConsumableArray(document.getElementsByClassName("buttonFixed"));
+
+      var buttonSpinner = inputsButtons[inputsButtons.length - 1].children[0]; //disable all inputs and buttons
+
+      inputsButtons.forEach(function (input) {
+        input.disabled = disableAndHide;
+      });
+      fixedButtons.forEach(function (button) {
+        button.style.display = disableAndHide ? "none" : "grid";
+      }); //change button style to see process animation and change text
+
+      buttonSpinner.className = disableAndHide ? (buttonSpinner.style.textShadow = "0 0 2.5px white", 'fas fa-spin') : (buttonSpinner.style.textShadow = "", '');
+      buttonSpinner.innerHTML = text;
     },
+
+    /**
+     * This function decode a string with the user data with a random key to convert char code to string
+     * @param {String} userData - User credentials encrypted for login session
+     * @param {String} randomKey - Key to decode the user data
+     */
+    decode: function decode(userData, randomKey) {
+      var arr = [];
+      var random = randomKey.split(""); //iterate every character and decode
+
+      userData.forEach(function (_char, index) {
+        arr[index] = String.fromCharCode(_char - random[index]);
+      }); //save user data encrypted 
+
+      this.$parent.userData = arr.join("").split("-");
+    },
+
+    /**
+     * This function encode the user information to save as a cookie for login automatically 
+     * @param {(String|Number)} id - User id
+     * @param {String} username - Username of user
+     */
+    encode: function encode(id, username) {
+      var cookie = "";
+      var random = "";
+      var preCookie = "".concat(id, "-").concat(username);
+      var prearrayCookie = preCookie.split(""); // encrypt every character
+
+      prearrayCookie.forEach(function (_char2) {
+        var randomNumner = Math.round(Math.random() * 9);
+        cookie = cookie.concat("".concat(_char2.charCodeAt() + randomNumner, "."));
+        random = random.concat("".concat(randomNumner));
+      }); // set encrypted user data and key in a cookie
+
+      this.$parent.setAndDeleteEncryptCookie("set", cookie.slice(0, cookie.length - 1), random); //close floating buttons
+
+      document.getElementsByClassName("fa-pen")[0].click();
+    },
+
+    /**
+     * Handle user login, make request to check username/email and password to make auth
+     */
     login: function login() {
-      console.log(this.usernameEmail, this.userPassword);
+      var _this = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        var inputs, inputsChecks;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                //to avoid multiple request disable all buttons
+                _this.disableElements(true); //get all inputs
+
+
+                inputs = _toConsumableArray(document.getElementsByTagName("input"));
+                inputsChecks = [_this.usernameEmailChecked, _this.passwordChecked]; //if all input are checked means that all complies with its syntax start request 
+                //check the status of inputs 
+
+                if (!inputsChecks.every(function (checked) {
+                  return checked == true;
+                })) {
+                  _context.next = 8;
+                  break;
+                }
+
+                _context.next = 6;
+                return axios.get('/api/login', {
+                  params: {
+                    usernameEmail: _this.usernameEmail,
+                    password: _this.password
+                  }
+                }).then(function (response) {
+                  //check response to see if data is incorrect and set message error and red border
+                  if (response.data[0].match(/incorrect/gi)) {
+                    response.data[0].match(/username/g) ? (inputs[0].style.borderColor = "red", inputs[0].nextElementSibling.style.opacity = "1", inputs[0].nextElementSibling.textContent = "Incorrect username or email") : '';
+                    response.data[0].match(/password/g) ? (inputs[1].style.borderColor = "red", inputs[1].nextElementSibling.style.opacity = "1", inputs[1].nextElementSibling.textContent = "Incorrect password") : ''; //print the error
+
+                    response.data[2] != '' ? _this.$parent.debug("error", response.data[2].errorInfo[2]) : '';
+                  } else {
+                    //if are correct we  decode the returned data and encode data to save in cookies
+                    _this.decode(response.data[1][0], response.data[1][1]);
+
+                    _this.encode(_this.$parent.userData[0], _this.$parent.userData[1], "set first cookie"); //activate spinner and reload page
+
+
+                    _this.$parent.$parent.spinner = true;
+                    location.reload();
+                  }
+                })["catch"](function (error) {
+                  console.log(error);
+                });
+
+              case 6:
+                _context.next = 9;
+                break;
+
+              case 8:
+                //we set a pink border in the inputs not checked
+                inputs.forEach(function (input, index) {
+                  input.style.borderColor = inputsChecks[index] ? 'rgb(156, 93, 240)' : 'deeppink';
+                });
+
+              case 9:
+                //activate buttons 
+                _this.disableElements(false, "Sing In");
+
+              case 10:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }))();
     },
+
+    /**
+     * Handle register of user, check that all fields are correct and sent a request to save data of the new user
+     */
     register: function register() {
-      console.log(this.username, this.userEmail, this.userPassword, this.userPasswordConfirmation);
+      var _this2 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        var inputs, inputsChecks;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                //disable buttons for multiple request
+                _this2.disableElements(true); //check the status of all data 
+
+
+                inputs = _toConsumableArray(document.getElementsByTagName("input"));
+                inputsChecks = [_this2.usernameChecked, _this2.userEmailChecked, _this2.userPasswordChecked, _this2.userPasswordConfirmationChecked]; //if all input are checked means that all complies with its syntax
+
+                if (!inputsChecks.every(function (checked) {
+                  return checked == true;
+                })) {
+                  _context2.next = 8;
+                  break;
+                }
+
+                _context2.next = 6;
+                return axios.post('/api/register', {
+                  username: _this2.username,
+                  email: _this2.userEmail,
+                  password: _this2.userPassword
+                }).then(function (response) {
+                  //if the data was save successfully we define a success register ofr new uses
+                  if (response.data.match(/new user/g)) {
+                    _this2.registerSuccesfully = true;
+                  } else {
+                    // when data was not register in database we set a message with the error and set a red borde 
+                    var _inputs = document.getElementsByTagName("input");
+
+                    response.data.match(/username/g) ? (_inputs[0].style.borderColor = "red", _inputs[0].nextElementSibling.style.opacity = "1", _inputs[0].nextElementSibling.textContent = "Username is already registered") : '';
+                    response.data.match(/email/g) ? (_inputs[1].style.borderColor = "red", _inputs[1].nextElementSibling.style.opacity = "1", _inputs[1].nextElementSibling.textContent = "Email is already registered") : '';
+                  }
+                })["catch"](function (error) {
+                  console.log(error);
+                });
+
+              case 6:
+                _context2.next = 9;
+                break;
+
+              case 8:
+                //we set a pink border in the inputs not checked
+                inputs.forEach(function (input, index) {
+                  input.style.borderColor = inputsChecks[index] ? 'rgb(156, 93, 240)' : 'deeppink';
+                });
+
+              case 9:
+                //activate all buttons
+                _this2.disableElements(false, "Sing Up");
+
+                if (_this2.registerSuccesfully) {
+                  //redirect to make login and close menu
+                  document.getElementsByClassName("fa-user")[0].click();
+                  setTimeout(function () {
+                    document.getElementsByClassName("fa-times")[0].click();
+                    _this2.registerSuccesfully = false;
+                  }, 50);
+                }
+
+              case 11:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }))();
+    },
+
+    /**
+     * We evaluate every character typed in input and check if the character is allowed or not
+     * @param {Object} e - event from element 
+     * @param {String} currentInput - Indicate type of input
+     * @param {Number} maxLength - Max lenght allowed in input
+     * @param {Number} symbolIndex - Index for the regex to use to check the symbols allowed
+     * @param {Number} syntaxIndex - Index for the regex to use to chekc the syntax for the current input
+     */
+    inputChecker: function inputChecker(e, currentInput, maxLength, symbolIndex, syntaxIndex) {
+      var passArray = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : [];
+      //we set a border blue if is red previusly
+      e.target.style.borderColor = e.target.style.borderColor == "deeppink" ? "rgb(155, 95, 240)" : e.target.style.borderColor; //set a limit of characters
+
+      e.target.value.length > maxLength ? e.target.value = this[currentInput] : this[currentInput] = e.target.value; //we asign direvtly the value because model assign don't
+
+      this.userPassword.split("").forEach(function (letter, index) {
+        passArray[index] = letter.match(/\w/g) ? letter : "\\".concat(letter);
+      }); //array with regex with the allowed characters
+
+      var allowedSymbols = [/\w/g, /[\w@\-\_\.]/g, /[^ üîøåéñáéíóú]/g]; // [0] regular expresion to check is a number or a letter,[2] check is a number, letter or a symbol avalible 
+      //array with regex with the rules for each input
+
+      var inputSyntax = [/^[a-zA-Z]\w{5,14}/g, // the regex is used to match usernames with 6-15 alphanumeric characters and should begin with a letter
+      /^[a-zA-Z](([\w\-\_]+(?<=[\w\-\_])\.?)+)?(?<=[\w\-\_])@\w{3,}\.\w{2,4}(\.\w{2,4})?/g, //the regex is used to match email with the syntax someone@domain.com
+      /[^ üîøåéñáéíóú]{8,16}/g, // the regex is used to match password with 8-16 characters except for accented letters and spaces
+      new RegExp("".concat(this.userPassword.length >= 8 ? passArray.join("") : ' '), "g"), // the regex is used to match usernamePassword with usernamePasswordConfirmation
+      /^[a-zA-Z](([\w\-\_]+(?<=[\w\-\_])\.?)+)?(?<=[\w\-\_])@\w{3,}\.\w{2,4}(\.\w{2,4})?|^[a-zA-Z]\w{5,14}/g // this evaluate if the string match with a username or a valid email
+      ]; //set a message below the input to say to user the correct syntax
+
+      var message = e.target.nextElementSibling;
+      message.textContent = currentInput == "username" ? this.messageUsername : currentInput == "userEmail" ? this.messageEmail : message.textContent;
+      var inputArray = this[currentInput].split(""); //we check every typed character
+
+      for (var i = 0; i < inputArray.length; i++) {
+        if (inputArray[i].match(allowedSymbols[symbolIndex])) {
+          continue;
+        } else {
+          //we check if the character is type at first, middle or at the end
+          var newValueInput = i == 0 ? this[currentInput].slice(1) : i == inputArray.length - 1 ? this[currentInput].slice(0, i) : this[currentInput].slice(0, i) + this[currentInput].slice(i + 1); //we set in the variable and the current input the new value if find a not allowed character
+
+          this[currentInput] = newValueInput;
+          e.target.value = newValueInput;
+          break;
+        }
+      } //this check if the rules of each input is follow check as correct, change the color of border and message opacity
+
+
+      this[currentInput].match(inputSyntax[syntaxIndex]) != null && this[currentInput].match(inputSyntax[syntaxIndex])[0].length == this[currentInput].length ? (this[currentInput + "Checked"] = true, e.target.style.borderColor = "rgb(150, 80, 240)", message.style.opacity = '0') : (this[currentInput + "Checked"] = false, e.target.style.borderColor = "rgb(155, 150, 240)", message.style.opacity = '1'); //if the input is empty we remove the message
+
+      e.target.value.length == 0 ? message.style.opacity = '0' : ''; //this if the user change the password after set a confirm password
+
+      if (currentInput == "userPassword" && this.userPasswordConfirmation.length > 1) {
+        var confirmPassword = e.target.nextElementSibling.nextElementSibling;
+        this.userPasswordConfirmationChecked = this.userPassword == this.userPasswordConfirmation ? (confirmPassword.style.borderColor = "rgb(150, 80, 240)", confirmPassword.nextElementSibling.style.opacity = 0, true) : (confirmPassword.style.borderColor = "rgb(155, 150, 240)", confirmPassword.nextElementSibling.style.opacity = 1, false);
+      }
     }
   }
 });
@@ -523,25 +2025,122 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  mounted: function mounted() {
-    this.debug("status", "mounted menu");
-  },
   props: {
     option: String,
-    toltip: String,
-    positionY: String
+    positionY: String,
+    toltip: String
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ModalComponent.vue?vue&type=script&lang=js&":
+/*!*************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ModalComponent.vue?vue&type=script&lang=js& ***!
+  \*************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _ItemComponent__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ItemComponent */ "./resources/js/components/ItemComponent.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: {
+    notTyped: Boolean,
+    title: String
   },
   data: function data() {
     return {
-      'debug': this.$parent.$parent.debug
+      listOfLists: this.$parent.listOfLists
     };
   },
   methods: {
-    editItem: function editItem() {
-      console.log("edit");
+    addList: function addList() {
+      this.$parent.addItemToList(false);
+    },
+    saveChanges: function saveChanges() {
+      this.$parent.saveChangesInDB('/api/saveModificationsToUserLists', 'modifiedLists', 'deletedLists', 'listOfLists');
     }
+  },
+  components: {
+    'item-component': _ItemComponent__WEBPACK_IMPORTED_MODULE_0__["default"]
   }
 });
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SpinnerComponent.vue?vue&type=script&lang=js&":
+/*!***************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SpinnerComponent.vue?vue&type=script&lang=js& ***!
+  \***************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  mounted: function mounted() {
+    //change color every .25 seconds
+    var spinerInterval = setInterval(function () {
+      if (document.getElementById("spinner")) {
+        //get the spiner icon and change the color
+        var color = document.getElementById("spinner").style.color;
+        document.getElementById("spinner").style.color = color == "red" ? "blue" : color == "blue" ? "yellow" : "red";
+      } else {
+        //delete the interval 
+        clearInterval(spinerInterval);
+      }
+    }, 250);
+  },
+  props: {
+    color: String,
+    shadow: String,
+    type: String
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AlertComponent.vue?vue&type=style&index=0&id=ccb104a8&scoped=true&lang=css&":
+/*!********************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/AlertComponent.vue?vue&type=style&index=0&id=ccb104a8&scoped=true&lang=css& ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.alertContainer[data-v-ccb104a8]{\r\n    align-items: center;\r\n    background-color: rgba(0, 0, 0, .75);\r\n    display: flex;\r\n    height: 100% ;\r\n    justify-content: center;\r\n    left: 0;\r\n    opacity: 0;\r\n    position: fixed;\r\n    right: 0;\r\n    top: 0;\r\n    transition: all 0.5s ease;\r\n    width: 100%;\r\n    z-index: 3;\n}\n.modal[data-v-ccb104a8] {\r\n    -webkit-border-radius: 18px;\r\n    background-size: cover;\r\n    background: linear-gradient(cyan,rgb(238, 227, 227),rgb(165, 206, 224));\r\n    border-radius: 18px;\r\n    box-shadow: 0 2px 8px rgba(0, 0, 0, 85);\r\n    box-sizing: content-box;\r\n    font-family: 'Open Sans', sans-serif;\r\n    height: -webkit-fit-content;\r\n    height: -moz-fit-content;\r\n    height: fit-content;\r\n    height: fit-content;\r\n    margin: 0;\r\n    overflow-x: hidden;\r\n    overflow-y: auto;\r\n    scrollbar-width: thin;\r\n    transition: all .3s ease;\r\n    width: 62%;\n}\n.headerAlert[data-v-ccb104a8]{\r\n    color: whitesmoke;\r\n    font-size: 60px;\r\n    text-align: center;\r\n    text-shadow: 0 0 10px darkblue;\n}\n.alertBody[data-v-ccb104a8]{\r\n    color:white;\r\n    font-family: 'Ubuntu', sans-serif;\r\n    font-size: 20px;\r\n    font-weight: 600 !important;\r\n    height: -webkit-fit-content;\r\n    height: -moz-fit-content;\r\n    height: fit-content;\r\n    padding: 10px 10px 0 10px;\r\n    text-align: center;\r\n    text-shadow: 0 0 3px black;\r\n    word-break: break-all;\n}\n.buttonContainer[data-v-ccb104a8]{\r\n    display: grid;\r\n    grid-template-columns: 1fr 1fr ;\r\n    height: 10%;\r\n    margin: 10px 0;\n}\n.buttonContainer button[data-v-ccb104a8]{\r\n    align-self: center;\r\n    box-shadow: 0 0 5px 0px gray;\r\n    height:50px;\r\n    justify-self: center;\r\n    padding:0;\r\n    width:50px;\n}\n@media (min-width: 769px){\n.modal[data-v-ccb104a8]{\r\n        width: 45%;\n}\n}\r\n\r\n", ""]);
+
+// exports
+
 
 /***/ }),
 
@@ -557,7 +2156,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\ni[data-v-c59fa660]{\r\n    align-self: center;\r\n    cursor: pointer;\r\n    font-size: 25px;\r\n    justify-self: center;\r\n    transition-duration: 0.5s;\n}\ni[data-v-c59fa660]:hover{\r\n    text-shadow: 0 0 1.5px rgb(30, 9, 255,0.5);\n}\r\n\r\n\r\n", ""]);
+exports.push([module.i, "\ni[data-v-c59fa660]{\r\n    align-self: center;\r\n    cursor: pointer;\r\n    font-size: 25px;\r\n    justify-self: center;\r\n    transition-duration: 0.5s;\n}\ni[data-v-c59fa660]:hover{\r\n    text-shadow: 0 0 1.5px rgb(30, 9, 255,0.5);\n}\n.borderShadow[data-v-c59fa660]{\r\n    text-shadow: 0 0 1.5px rgb(30, 9, 255,0.5);\n}\r\n\r\n", ""]);
 
 // exports
 
@@ -576,7 +2175,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.itemContainer[data-v-70c3fdcf]{\r\n    box-sizing: border-box;\r\n    display: grid;\r\n    grid-template-columns: 10% 70% 10% 10%;\r\n    width: 100%;\n}\n.itemText[data-v-70c3fdcf]{\r\n    border:1px solid transparent;\r\n    border-radius: 8px;\r\n    display: block;\r\n    cursor: pointer;\r\n    font-family: 'Ubuntu', sans-serif;\r\n    font-size: 1em;\r\n    font-weight: 400;\r\n    grid-area: 1/2/2/3;\r\n    -webkit-hyphens:auto;\r\n        -ms-hyphens:auto;\r\n            hyphens:auto;\r\n    margin: 0;\r\n    max-height: 45px;\r\n    padding: 10px;\r\n    text-align: justify;\r\n    transition-duration: 0.5s;\r\n    outline: none;\r\n    overflow: hidden;\n}\n.popAnimation[data-v-70c3fdcf]{\r\n    -webkit-animation-name: popup-data-v-70c3fdcf;\r\n            animation-name: popup-data-v-70c3fdcf;\r\n    -webkit-animation-duration: 0.35s;\r\n            animation-duration: 0.35s;\r\n    -webkit-animation-timing-function: ease-in;\r\n            animation-timing-function: ease-in;\n}\n@-webkit-keyframes popup-data-v-70c3fdcf{\n0%{font-size: 1.5em;}\n50%{font-size: 2em;}\n100%{font-size: 1.5em;}\n}\n@keyframes popup-data-v-70c3fdcf{\n0%{font-size: 1.5em;}\n50%{font-size: 2em;}\n100%{font-size: 1.5em;}\n}\n.showItem[data-v-70c3fdcf]{\r\n    max-height: -webkit-fit-content ;\r\n    max-height: -moz-fit-content ;\r\n    max-height: fit-content ;\n}\n.editableBorder[data-v-70c3fdcf]{\r\n    border:1px solid blue;\r\n    cursor:text;\r\n    margin:0 2.5px;\r\n    max-height: 90px;\n}\r\n\r\n\r\n", ""]);
+exports.push([module.i, "\n.itemContainer[data-v-70c3fdcf]{\r\n    box-sizing: border-box;\r\n    display: grid;\r\n    grid-template-columns: 12.5% 65% 10% 12.5%;\r\n    width: 100%;\n}\n.itemText[data-v-70c3fdcf]{\r\n    border-radius: 8px;\r\n    border:2px solid transparent;\r\n    box-sizing: border-box;\r\n    cursor: pointer;\r\n    display: block;\r\n    font-family: 'Ubuntu', sans-serif;\r\n    font-size: 1em;\r\n    font-weight: 400;\r\n    margin: 0;\r\n    max-height: 65px;\r\n    outline: none;\r\n    overflow: hidden;\r\n    padding: 5px 5px;\r\n    text-align: justify;\r\n    transition-duration: .35s;\r\n    word-break: break-word;\n}\n.dateAndTime[data-v-70c3fdcf]{\r\n    box-sizing:unset;\r\n    cursor:pointer;\r\n    font-size: 88%;\r\n    font-style: italic;\r\n    padding-top:10px;\n}\n.popAnimation[data-v-70c3fdcf]{\r\n    -webkit-animation-duration: 0.5s;\r\n            animation-duration: 0.5s;\r\n    -webkit-animation-name: popup-data-v-70c3fdcf;\r\n            animation-name: popup-data-v-70c3fdcf;\r\n    -webkit-animation-timing-function: ease-in;\r\n            animation-timing-function: ease-in;\n}\n.editable[data-v-70c3fdcf]:empty:before{\r\n    color:gray;\r\n    content: attr(data-placeholder);\n}\n.noOutliner[data-v-70c3fdcf]{\r\n    border-radius: 8px;\r\n    cursor: pointer;\r\n    display: block;\r\n    margin: 0;\r\n    max-height: 65px;\r\n    overflow: hidden;\r\n    transition-duration: 0.35s;\r\n    transition-timing-function: ease-in-out;\n}\n.noOutliner[data-v-70c3fdcf]:focus{\r\n    outline: none;\n}\n.efectText[data-v-70c3fdcf]{\r\n    max-height: 400px !important;\n}\n@-webkit-keyframes popup-data-v-70c3fdcf{\n0%{font-size: 1.5em;}\n50%{font-size: 2em;}\n100%{font-size: 1.5em;}\n}\n@keyframes popup-data-v-70c3fdcf{\n0%{font-size: 1.5em;}\n50%{font-size: 2em;}\n100%{font-size: 1.5em;}\n}\n.showItem[data-v-70c3fdcf]{\r\n    max-height: -webkit-fit-content ;\r\n    max-height: -moz-fit-content ;\r\n    max-height: fit-content ;\n}\n.editableContainer[data-v-70c3fdcf]{\r\n    max-height: 90px;\n}\n.editableBorder[data-v-70c3fdcf]{\r\n    border:2px solid blue !important;\r\n    cursor:text;\r\n    margin:0 10px;\r\n    max-height: 90px;\n}\r\n\r\n", ""]);
 
 // exports
 
@@ -595,7 +2194,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.list[data-v-6ee53bb8]{\r\n    background: blue;\r\n    border-radius: 15px;\r\n    box-shadow: 5px 5px 10px 0 rgba(255, 182, 193, 0.5);\r\n    display: grid;\r\n    grid-template-rows: auto 1fr;\r\n    grid-area: 2/2/3/3;\r\n    height: 100%;\n}\n.headerList[data-v-6ee53bb8]{\r\n    background: linear-gradient(to right,rgb(113, 36, 214),rgb(126, 52, 224),rgb(141, 68, 236),rgb(156, 93, 240));\r\n    border-radius: 15px 15px 0 0;\r\n    display: grid;\r\n    grid-area: 1/1/2/2;\r\n    width: 100%;\n}\n.title[data-v-6ee53bb8]{\r\n    align-self: center;\r\n    color:rgb(255, 255, 255);\r\n    font-size: 2.25em;\r\n    font-family: 'Ubuntu', sans-serif;\r\n    font-weight: 300;\r\n    justify-self: center;\r\n    margin: 0;\r\n    padding: 20px 0;\r\n    text-shadow: 0 0 3px rgb(75, 8, 8);\r\n    transition:opacity 0.25s ease-in;\r\n    width:-webkit-fit-content;\r\n    width:-moz-fit-content;\r\n    width:fit-content;\n}\n.bodyList[data-v-6ee53bb8]{\r\n    background:linear-gradient(to top, rgb(235, 232, 232), whitesmoke,rgb(240, 232, 232));\r\n    border:1px solid red;\r\n    border-radius: 0 0 15px 15px;\r\n    box-sizing: border-box;\r\n    grid-area: 2/1/3/2;\r\n    height: 100%;\r\n    padding:5% 2.5%;\r\n    overflow-y: scroll;\n}\n.fade[data-v-6ee53bb8]{\r\n    -webkit-animation-name: fadeIn-data-v-6ee53bb8;\r\n            animation-name: fadeIn-data-v-6ee53bb8;\r\n    -webkit-animation-duration: 0.25s;\r\n            animation-duration: 0.25s;\r\n    -webkit-animation-timing-function:ease-in-out ;\r\n            animation-timing-function:ease-in-out ;\r\n    transition-duration: 0.5s;\n}\n@-webkit-keyframes fadeIn-data-v-6ee53bb8{\n0%{opacity: 0;}\n100%{opacity: 1;}\n}\n@keyframes fadeIn-data-v-6ee53bb8{\n0%{opacity: 0;}\n100%{opacity: 1;}\n}\r\n\r\n\r\n", ""]);
+exports.push([module.i, "\n.list[data-v-6ee53bb8]{\r\n    border-radius: 15px;\r\n    border:1px solid lightblue;\r\n    box-shadow: 5px 5px 10px 0 rgba(255, 182, 193, 0.5);\r\n    box-sizing: border-box;\r\n    display: grid;\r\n    grid-area: 2/2/3/3;\r\n    grid-template-rows: 110px 1fr;\r\n    height: 100%;\r\n    transition: all .3s ease;\n}\n.bodyList[data-v-6ee53bb8]{\r\n    background:linear-gradient(to top, rgb(235, 232, 232), whitesmoke,rgb(240, 232, 232));\r\n    border-radius: 0 0 15px 15px;\r\n    box-sizing: border-box;\r\n    display: grid;\r\n    grid-area: 2/1/3/2;\r\n    grid-template-rows: 1fr auto;\r\n    height: 100%;\r\n    overflow-y: auto;\r\n    padding:10px;\n}\nsection[data-v-6ee53bb8]{\r\n    grid-area: 1/1/2/2;\r\n    overflow-x: hidden;\n}\n.buttonsContainer[data-v-6ee53bb8]{\r\n    box-sizing: border-box;\r\n    display: grid;\r\n    grid-area: 2/1/3/2;\r\n    grid-template-columns: 1fr 1fr ;\r\n    padding-top: 10px;\n}\n.buttonsContainer button[data-v-6ee53bb8]{\r\n    font-size: 1em;\n}\n.fade[data-v-6ee53bb8]{\r\n    -webkit-animation-duration: 0.25s;\r\n            animation-duration: 0.25s;\r\n    -webkit-animation-name: fadeIn-data-v-6ee53bb8;\r\n            animation-name: fadeIn-data-v-6ee53bb8;\r\n    -webkit-animation-timing-function:ease-in-out ;\r\n            animation-timing-function:ease-in-out ;\r\n    transition-duration: 0.5s;\n}\n@-webkit-keyframes fadeIn-data-v-6ee53bb8{\n0%{opacity: 0;}\n100%{opacity: 1;}\n}\n@keyframes fadeIn-data-v-6ee53bb8{\n0%{opacity: 0;}\n100%{opacity: 1;}\n}\r\n\r\n", ""]);
 
 // exports
 
@@ -614,7 +2213,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\nform[data-v-4d2414bf]{\r\n    overflow: auto;\n}\n.inputCute[data-v-4d2414bf]{\r\n    transition-duration: 0.35s;\r\n    border-radius: 25px;\r\n    border: 5px outset rgb(156, 93, 240);\r\n    color: #6a6a6a;\r\n    display: block;\r\n    margin: auto;\r\n    margin-bottom: 1em;\r\n    outline: none;\r\n    padding: 0;\r\n    font-family: 'Ubuntu', sans-serif;\r\n    font-size: 1.1em;\r\n    font-weight: 400;\r\n    text-align: center;\r\n    height: 40px;\r\n    width: 95%;\r\n    -webkit-appearance: none;\n}\n.inputCute[data-v-4d2414bf]:focus{\r\n    box-shadow: 0 0 5px rgba(0, 0, 139, 0.5);\n}\r\n    \r\n\r\n\r\n", ""]);
+exports.push([module.i, "\nform[data-v-4d2414bf]{\r\n    align-self: center;\r\n    height: -webkit-fit-content;\r\n    height: -moz-fit-content;\r\n    height: fit-content;\r\n    padding: 5px 0;\n}\n.inputCute[data-v-4d2414bf]{\r\n    -webkit-appearance: none;\r\n    border-radius: 25px;\r\n    border: 5px outset rgb(155, 150, 240);\r\n    color: #6a6a6a;\r\n    display: block;\r\n    font-family: 'Ubuntu', sans-serif;\r\n    font-size: 1.1em;\r\n    font-weight: 400;\r\n    height: 40px;\r\n    margin: auto;\r\n    outline: none;\r\n    padding: 0;\r\n    text-align: center;\r\n    transition-duration: 0.35s;\r\n    transition-duration: 0.5s;\r\n    width: 95%;\n}\n.inputCute[data-v-4d2414bf]:focus{\r\n    box-shadow: 0 0 5px rgba(0, 0, 139, 0.5);\n}\nspan[data-v-4d2414bf]{\r\n    color: rgb(34, 34, 83);\r\n    display: block;\r\n    font-family: 'Ubuntu', sans-serif;\r\n    font-size: 0.75em;\r\n    margin: auto;\r\n    opacity: 0;\r\n    padding: 5px 0;\r\n    text-align: center;\r\n    transition-duration: 0.5s;\r\n    width: -webkit-fit-content;\r\n    width: -moz-fit-content;\r\n    width: fit-content;\n}\r\n\r\n", ""]);
 
 // exports
 
@@ -633,7 +2232,45 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.buttonFixed[data-v-98f701fa]{\r\n    align-items: center;\r\n    background: linear-gradient(to right,rgb(113, 36, 214),rgb(126, 52, 224),rgb(141, 68, 236),rgb(156, 93, 240));\r\n    border-radius: 35px;\r\n    box-shadow: 2px 2px 8px lightgrey;\r\n    color: white;\r\n    cursor: pointer;\r\n    display: grid;\r\n    font-size: 25px;\r\n    outline: none;\r\n    padding: 0;\r\n    position: fixed;\r\n    justify-content: center;\r\n    right: 10px;\r\n    transition-duration: 0.35s;\r\n    transition-timing-function: ease-in-out;\r\n    height: 50px;\r\n    width: 50px;\n}\n.buttonFixed[data-v-98f701fa]:hover{\r\n    text-shadow: 0 0 10px rgb(176, 176, 235);\n}\r\n\r\n\r\n", ""]);
+exports.push([module.i, "\n.buttonFixed[data-v-98f701fa]{\r\n    align-items: center;\r\n    background: linear-gradient(to right,rgb(113, 36, 214),rgb(126, 52, 224),rgb(141, 68, 236),rgb(156, 93, 240));\r\n    border-radius: 35px;\r\n    box-shadow: 2px 2px 8px lightgrey;\r\n    color: white;\r\n    cursor: pointer;\r\n    display: grid;\r\n    font-size: 25px;\r\n    height: 50px;\r\n    justify-content: center;\r\n    outline: none;\r\n    padding: 0;\r\n    position: fixed;\r\n    right: 10px;\r\n    transition-duration: 0.35s;\r\n    transition-timing-function: ease-in-out;\r\n    width: 50px;\n}\n.buttonFixed[data-v-98f701fa]:hover{\r\n    text-shadow: 0 0 10px rgb(176, 176, 235);\n}\r\n\r\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ModalComponent.vue?vue&type=style&index=0&id=4b2d100a&scoped=true&lang=css&":
+/*!********************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ModalComponent.vue?vue&type=style&index=0&id=4b2d100a&scoped=true&lang=css& ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.modalContainer[data-v-4b2d100a]{\r\n    align-items: center;\r\n    background-color: rgba(0, 0, 0, .75);\r\n    display: flex;\r\n    height: 100% ;\r\n    justify-content: center;\r\n    left: 0;\r\n    opacity: 0;\r\n    position: fixed;\r\n    right: 0;\r\n    top: 0;\r\n    transition: all 0.5s ease;\r\n    width: 100%;\r\n    z-index: 2;\n}\n.modal[data-v-4b2d100a] {\r\n    -webkit-border-radius: 18px;\r\n    background-size: cover;\r\n    background: linear-gradient(cyan,rgb(238, 227, 227),rgb(165, 206, 224));\r\n    border-radius: 18px;\r\n    box-shadow: 0 2px 8px rgba(0, 0, 0, 85);\r\n    box-sizing: content-box;\r\n    font-family: 'Open Sans', sans-serif;\r\n    height: 90%;\r\n    margin: 0;\r\n    overflow-x: hidden;\r\n    overflow-y: hidden;\r\n    scrollbar-width: thin;\r\n    transition: all .3s ease;\r\n    width: 85%;\n}\n.modalBody[data-v-4b2d100a]{\r\n    font-family: 'Ubuntu', sans-serif;\r\n    font-weight: 600 !important;\r\n    height:calc(95% - 125px);\r\n    margin: 5px;\r\n    overflow-y: auto;\n}\n.buttonContainer[data-v-4b2d100a]{\r\n    display: grid;\r\n    grid-template-columns: 1fr 1fr ;\r\n    height: 10%;\n}\n.buttonContainer button[data-v-4b2d100a]{\r\n    align-self: center;\r\n    box-shadow: 0 0 5px 0px gray;\r\n    height:50px;\r\n    justify-self: center;\r\n    margin-bottom: 10px;\r\n    padding:0;\r\n    width:50px;\n}\n@media (min-width: 769px){\n.modal[data-v-4b2d100a]{\r\n        width: 45%;\n}\n}\r\n\r\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SpinnerComponent.vue?vue&type=style&index=0&id=1c7d574f&scoped=true&lang=css&":
+/*!**********************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SpinnerComponent.vue?vue&type=style&index=0&id=1c7d574f&scoped=true&lang=css& ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.spinner[data-v-1c7d574f]{\r\n    background: white;\r\n    display: grid;\r\n    grid-area: 1/1/4/4;\r\n    height: 100%;\r\n    transition-duration: 0.5s;\r\n    width: 100%;\r\n    z-index: 3;\n}\ni[data-v-1c7d574f]{\r\n    align-self: center;\r\n    color:red;\r\n    font-size: 100px;\r\n    justify-self: center;\r\n    transition-duration: 0.5s;\n}\r\n\r\n", ""]);
 
 // exports
 
@@ -922,6 +2559,746 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
+/***/ "./node_modules/regenerator-runtime/runtime.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/regenerator-runtime/runtime.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * Copyright (c) 2014-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+var runtime = (function (exports) {
+  "use strict";
+
+  var Op = Object.prototype;
+  var hasOwn = Op.hasOwnProperty;
+  var undefined; // More compressible than void 0.
+  var $Symbol = typeof Symbol === "function" ? Symbol : {};
+  var iteratorSymbol = $Symbol.iterator || "@@iterator";
+  var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
+  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+
+  function wrap(innerFn, outerFn, self, tryLocsList) {
+    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
+    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
+    var generator = Object.create(protoGenerator.prototype);
+    var context = new Context(tryLocsList || []);
+
+    // The ._invoke method unifies the implementations of the .next,
+    // .throw, and .return methods.
+    generator._invoke = makeInvokeMethod(innerFn, self, context);
+
+    return generator;
+  }
+  exports.wrap = wrap;
+
+  // Try/catch helper to minimize deoptimizations. Returns a completion
+  // record like context.tryEntries[i].completion. This interface could
+  // have been (and was previously) designed to take a closure to be
+  // invoked without arguments, but in all the cases we care about we
+  // already have an existing method we want to call, so there's no need
+  // to create a new function object. We can even get away with assuming
+  // the method takes exactly one argument, since that happens to be true
+  // in every case, so we don't have to touch the arguments object. The
+  // only additional allocation required is the completion record, which
+  // has a stable shape and so hopefully should be cheap to allocate.
+  function tryCatch(fn, obj, arg) {
+    try {
+      return { type: "normal", arg: fn.call(obj, arg) };
+    } catch (err) {
+      return { type: "throw", arg: err };
+    }
+  }
+
+  var GenStateSuspendedStart = "suspendedStart";
+  var GenStateSuspendedYield = "suspendedYield";
+  var GenStateExecuting = "executing";
+  var GenStateCompleted = "completed";
+
+  // Returning this object from the innerFn has the same effect as
+  // breaking out of the dispatch switch statement.
+  var ContinueSentinel = {};
+
+  // Dummy constructor functions that we use as the .constructor and
+  // .constructor.prototype properties for functions that return Generator
+  // objects. For full spec compliance, you may wish to configure your
+  // minifier not to mangle the names of these two functions.
+  function Generator() {}
+  function GeneratorFunction() {}
+  function GeneratorFunctionPrototype() {}
+
+  // This is a polyfill for %IteratorPrototype% for environments that
+  // don't natively support it.
+  var IteratorPrototype = {};
+  IteratorPrototype[iteratorSymbol] = function () {
+    return this;
+  };
+
+  var getProto = Object.getPrototypeOf;
+  var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+  if (NativeIteratorPrototype &&
+      NativeIteratorPrototype !== Op &&
+      hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
+    // This environment has a native %IteratorPrototype%; use it instead
+    // of the polyfill.
+    IteratorPrototype = NativeIteratorPrototype;
+  }
+
+  var Gp = GeneratorFunctionPrototype.prototype =
+    Generator.prototype = Object.create(IteratorPrototype);
+  GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
+  GeneratorFunctionPrototype.constructor = GeneratorFunction;
+  GeneratorFunctionPrototype[toStringTagSymbol] =
+    GeneratorFunction.displayName = "GeneratorFunction";
+
+  // Helper for defining the .next, .throw, and .return methods of the
+  // Iterator interface in terms of a single ._invoke method.
+  function defineIteratorMethods(prototype) {
+    ["next", "throw", "return"].forEach(function(method) {
+      prototype[method] = function(arg) {
+        return this._invoke(method, arg);
+      };
+    });
+  }
+
+  exports.isGeneratorFunction = function(genFun) {
+    var ctor = typeof genFun === "function" && genFun.constructor;
+    return ctor
+      ? ctor === GeneratorFunction ||
+        // For the native GeneratorFunction constructor, the best we can
+        // do is to check its .name property.
+        (ctor.displayName || ctor.name) === "GeneratorFunction"
+      : false;
+  };
+
+  exports.mark = function(genFun) {
+    if (Object.setPrototypeOf) {
+      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
+    } else {
+      genFun.__proto__ = GeneratorFunctionPrototype;
+      if (!(toStringTagSymbol in genFun)) {
+        genFun[toStringTagSymbol] = "GeneratorFunction";
+      }
+    }
+    genFun.prototype = Object.create(Gp);
+    return genFun;
+  };
+
+  // Within the body of any async function, `await x` is transformed to
+  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
+  // `hasOwn.call(value, "__await")` to determine if the yielded value is
+  // meant to be awaited.
+  exports.awrap = function(arg) {
+    return { __await: arg };
+  };
+
+  function AsyncIterator(generator, PromiseImpl) {
+    function invoke(method, arg, resolve, reject) {
+      var record = tryCatch(generator[method], generator, arg);
+      if (record.type === "throw") {
+        reject(record.arg);
+      } else {
+        var result = record.arg;
+        var value = result.value;
+        if (value &&
+            typeof value === "object" &&
+            hasOwn.call(value, "__await")) {
+          return PromiseImpl.resolve(value.__await).then(function(value) {
+            invoke("next", value, resolve, reject);
+          }, function(err) {
+            invoke("throw", err, resolve, reject);
+          });
+        }
+
+        return PromiseImpl.resolve(value).then(function(unwrapped) {
+          // When a yielded Promise is resolved, its final value becomes
+          // the .value of the Promise<{value,done}> result for the
+          // current iteration.
+          result.value = unwrapped;
+          resolve(result);
+        }, function(error) {
+          // If a rejected Promise was yielded, throw the rejection back
+          // into the async generator function so it can be handled there.
+          return invoke("throw", error, resolve, reject);
+        });
+      }
+    }
+
+    var previousPromise;
+
+    function enqueue(method, arg) {
+      function callInvokeWithMethodAndArg() {
+        return new PromiseImpl(function(resolve, reject) {
+          invoke(method, arg, resolve, reject);
+        });
+      }
+
+      return previousPromise =
+        // If enqueue has been called before, then we want to wait until
+        // all previous Promises have been resolved before calling invoke,
+        // so that results are always delivered in the correct order. If
+        // enqueue has not been called before, then it is important to
+        // call invoke immediately, without waiting on a callback to fire,
+        // so that the async generator function has the opportunity to do
+        // any necessary setup in a predictable way. This predictability
+        // is why the Promise constructor synchronously invokes its
+        // executor callback, and why async functions synchronously
+        // execute code before the first await. Since we implement simple
+        // async functions in terms of async generators, it is especially
+        // important to get this right, even though it requires care.
+        previousPromise ? previousPromise.then(
+          callInvokeWithMethodAndArg,
+          // Avoid propagating failures to Promises returned by later
+          // invocations of the iterator.
+          callInvokeWithMethodAndArg
+        ) : callInvokeWithMethodAndArg();
+    }
+
+    // Define the unified helper method that is used to implement .next,
+    // .throw, and .return (see defineIteratorMethods).
+    this._invoke = enqueue;
+  }
+
+  defineIteratorMethods(AsyncIterator.prototype);
+  AsyncIterator.prototype[asyncIteratorSymbol] = function () {
+    return this;
+  };
+  exports.AsyncIterator = AsyncIterator;
+
+  // Note that simple async functions are implemented on top of
+  // AsyncIterator objects; they just return a Promise for the value of
+  // the final result produced by the iterator.
+  exports.async = function(innerFn, outerFn, self, tryLocsList, PromiseImpl) {
+    if (PromiseImpl === void 0) PromiseImpl = Promise;
+
+    var iter = new AsyncIterator(
+      wrap(innerFn, outerFn, self, tryLocsList),
+      PromiseImpl
+    );
+
+    return exports.isGeneratorFunction(outerFn)
+      ? iter // If outerFn is a generator, return the full iterator.
+      : iter.next().then(function(result) {
+          return result.done ? result.value : iter.next();
+        });
+  };
+
+  function makeInvokeMethod(innerFn, self, context) {
+    var state = GenStateSuspendedStart;
+
+    return function invoke(method, arg) {
+      if (state === GenStateExecuting) {
+        throw new Error("Generator is already running");
+      }
+
+      if (state === GenStateCompleted) {
+        if (method === "throw") {
+          throw arg;
+        }
+
+        // Be forgiving, per 25.3.3.3.3 of the spec:
+        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
+        return doneResult();
+      }
+
+      context.method = method;
+      context.arg = arg;
+
+      while (true) {
+        var delegate = context.delegate;
+        if (delegate) {
+          var delegateResult = maybeInvokeDelegate(delegate, context);
+          if (delegateResult) {
+            if (delegateResult === ContinueSentinel) continue;
+            return delegateResult;
+          }
+        }
+
+        if (context.method === "next") {
+          // Setting context._sent for legacy support of Babel's
+          // function.sent implementation.
+          context.sent = context._sent = context.arg;
+
+        } else if (context.method === "throw") {
+          if (state === GenStateSuspendedStart) {
+            state = GenStateCompleted;
+            throw context.arg;
+          }
+
+          context.dispatchException(context.arg);
+
+        } else if (context.method === "return") {
+          context.abrupt("return", context.arg);
+        }
+
+        state = GenStateExecuting;
+
+        var record = tryCatch(innerFn, self, context);
+        if (record.type === "normal") {
+          // If an exception is thrown from innerFn, we leave state ===
+          // GenStateExecuting and loop back for another invocation.
+          state = context.done
+            ? GenStateCompleted
+            : GenStateSuspendedYield;
+
+          if (record.arg === ContinueSentinel) {
+            continue;
+          }
+
+          return {
+            value: record.arg,
+            done: context.done
+          };
+
+        } else if (record.type === "throw") {
+          state = GenStateCompleted;
+          // Dispatch the exception by looping back around to the
+          // context.dispatchException(context.arg) call above.
+          context.method = "throw";
+          context.arg = record.arg;
+        }
+      }
+    };
+  }
+
+  // Call delegate.iterator[context.method](context.arg) and handle the
+  // result, either by returning a { value, done } result from the
+  // delegate iterator, or by modifying context.method and context.arg,
+  // setting context.delegate to null, and returning the ContinueSentinel.
+  function maybeInvokeDelegate(delegate, context) {
+    var method = delegate.iterator[context.method];
+    if (method === undefined) {
+      // A .throw or .return when the delegate iterator has no .throw
+      // method always terminates the yield* loop.
+      context.delegate = null;
+
+      if (context.method === "throw") {
+        // Note: ["return"] must be used for ES3 parsing compatibility.
+        if (delegate.iterator["return"]) {
+          // If the delegate iterator has a return method, give it a
+          // chance to clean up.
+          context.method = "return";
+          context.arg = undefined;
+          maybeInvokeDelegate(delegate, context);
+
+          if (context.method === "throw") {
+            // If maybeInvokeDelegate(context) changed context.method from
+            // "return" to "throw", let that override the TypeError below.
+            return ContinueSentinel;
+          }
+        }
+
+        context.method = "throw";
+        context.arg = new TypeError(
+          "The iterator does not provide a 'throw' method");
+      }
+
+      return ContinueSentinel;
+    }
+
+    var record = tryCatch(method, delegate.iterator, context.arg);
+
+    if (record.type === "throw") {
+      context.method = "throw";
+      context.arg = record.arg;
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    var info = record.arg;
+
+    if (! info) {
+      context.method = "throw";
+      context.arg = new TypeError("iterator result is not an object");
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    if (info.done) {
+      // Assign the result of the finished delegate to the temporary
+      // variable specified by delegate.resultName (see delegateYield).
+      context[delegate.resultName] = info.value;
+
+      // Resume execution at the desired location (see delegateYield).
+      context.next = delegate.nextLoc;
+
+      // If context.method was "throw" but the delegate handled the
+      // exception, let the outer generator proceed normally. If
+      // context.method was "next", forget context.arg since it has been
+      // "consumed" by the delegate iterator. If context.method was
+      // "return", allow the original .return call to continue in the
+      // outer generator.
+      if (context.method !== "return") {
+        context.method = "next";
+        context.arg = undefined;
+      }
+
+    } else {
+      // Re-yield the result returned by the delegate method.
+      return info;
+    }
+
+    // The delegate iterator is finished, so forget it and continue with
+    // the outer generator.
+    context.delegate = null;
+    return ContinueSentinel;
+  }
+
+  // Define Generator.prototype.{next,throw,return} in terms of the
+  // unified ._invoke helper method.
+  defineIteratorMethods(Gp);
+
+  Gp[toStringTagSymbol] = "Generator";
+
+  // A Generator should always return itself as the iterator object when the
+  // @@iterator function is called on it. Some browsers' implementations of the
+  // iterator prototype chain incorrectly implement this, causing the Generator
+  // object to not be returned from this call. This ensures that doesn't happen.
+  // See https://github.com/facebook/regenerator/issues/274 for more details.
+  Gp[iteratorSymbol] = function() {
+    return this;
+  };
+
+  Gp.toString = function() {
+    return "[object Generator]";
+  };
+
+  function pushTryEntry(locs) {
+    var entry = { tryLoc: locs[0] };
+
+    if (1 in locs) {
+      entry.catchLoc = locs[1];
+    }
+
+    if (2 in locs) {
+      entry.finallyLoc = locs[2];
+      entry.afterLoc = locs[3];
+    }
+
+    this.tryEntries.push(entry);
+  }
+
+  function resetTryEntry(entry) {
+    var record = entry.completion || {};
+    record.type = "normal";
+    delete record.arg;
+    entry.completion = record;
+  }
+
+  function Context(tryLocsList) {
+    // The root entry object (effectively a try statement without a catch
+    // or a finally block) gives us a place to store values thrown from
+    // locations where there is no enclosing try statement.
+    this.tryEntries = [{ tryLoc: "root" }];
+    tryLocsList.forEach(pushTryEntry, this);
+    this.reset(true);
+  }
+
+  exports.keys = function(object) {
+    var keys = [];
+    for (var key in object) {
+      keys.push(key);
+    }
+    keys.reverse();
+
+    // Rather than returning an object with a next method, we keep
+    // things simple and return the next function itself.
+    return function next() {
+      while (keys.length) {
+        var key = keys.pop();
+        if (key in object) {
+          next.value = key;
+          next.done = false;
+          return next;
+        }
+      }
+
+      // To avoid creating an additional object, we just hang the .value
+      // and .done properties off the next function object itself. This
+      // also ensures that the minifier will not anonymize the function.
+      next.done = true;
+      return next;
+    };
+  };
+
+  function values(iterable) {
+    if (iterable) {
+      var iteratorMethod = iterable[iteratorSymbol];
+      if (iteratorMethod) {
+        return iteratorMethod.call(iterable);
+      }
+
+      if (typeof iterable.next === "function") {
+        return iterable;
+      }
+
+      if (!isNaN(iterable.length)) {
+        var i = -1, next = function next() {
+          while (++i < iterable.length) {
+            if (hasOwn.call(iterable, i)) {
+              next.value = iterable[i];
+              next.done = false;
+              return next;
+            }
+          }
+
+          next.value = undefined;
+          next.done = true;
+
+          return next;
+        };
+
+        return next.next = next;
+      }
+    }
+
+    // Return an iterator with no values.
+    return { next: doneResult };
+  }
+  exports.values = values;
+
+  function doneResult() {
+    return { value: undefined, done: true };
+  }
+
+  Context.prototype = {
+    constructor: Context,
+
+    reset: function(skipTempReset) {
+      this.prev = 0;
+      this.next = 0;
+      // Resetting context._sent for legacy support of Babel's
+      // function.sent implementation.
+      this.sent = this._sent = undefined;
+      this.done = false;
+      this.delegate = null;
+
+      this.method = "next";
+      this.arg = undefined;
+
+      this.tryEntries.forEach(resetTryEntry);
+
+      if (!skipTempReset) {
+        for (var name in this) {
+          // Not sure about the optimal order of these conditions:
+          if (name.charAt(0) === "t" &&
+              hasOwn.call(this, name) &&
+              !isNaN(+name.slice(1))) {
+            this[name] = undefined;
+          }
+        }
+      }
+    },
+
+    stop: function() {
+      this.done = true;
+
+      var rootEntry = this.tryEntries[0];
+      var rootRecord = rootEntry.completion;
+      if (rootRecord.type === "throw") {
+        throw rootRecord.arg;
+      }
+
+      return this.rval;
+    },
+
+    dispatchException: function(exception) {
+      if (this.done) {
+        throw exception;
+      }
+
+      var context = this;
+      function handle(loc, caught) {
+        record.type = "throw";
+        record.arg = exception;
+        context.next = loc;
+
+        if (caught) {
+          // If the dispatched exception was caught by a catch block,
+          // then let that catch block handle the exception normally.
+          context.method = "next";
+          context.arg = undefined;
+        }
+
+        return !! caught;
+      }
+
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        var record = entry.completion;
+
+        if (entry.tryLoc === "root") {
+          // Exception thrown outside of any try block that could handle
+          // it, so set the completion value of the entire function to
+          // throw the exception.
+          return handle("end");
+        }
+
+        if (entry.tryLoc <= this.prev) {
+          var hasCatch = hasOwn.call(entry, "catchLoc");
+          var hasFinally = hasOwn.call(entry, "finallyLoc");
+
+          if (hasCatch && hasFinally) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            } else if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else if (hasCatch) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            }
+
+          } else if (hasFinally) {
+            if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else {
+            throw new Error("try statement without catch or finally");
+          }
+        }
+      }
+    },
+
+    abrupt: function(type, arg) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc <= this.prev &&
+            hasOwn.call(entry, "finallyLoc") &&
+            this.prev < entry.finallyLoc) {
+          var finallyEntry = entry;
+          break;
+        }
+      }
+
+      if (finallyEntry &&
+          (type === "break" ||
+           type === "continue") &&
+          finallyEntry.tryLoc <= arg &&
+          arg <= finallyEntry.finallyLoc) {
+        // Ignore the finally entry if control is not jumping to a
+        // location outside the try/catch block.
+        finallyEntry = null;
+      }
+
+      var record = finallyEntry ? finallyEntry.completion : {};
+      record.type = type;
+      record.arg = arg;
+
+      if (finallyEntry) {
+        this.method = "next";
+        this.next = finallyEntry.finallyLoc;
+        return ContinueSentinel;
+      }
+
+      return this.complete(record);
+    },
+
+    complete: function(record, afterLoc) {
+      if (record.type === "throw") {
+        throw record.arg;
+      }
+
+      if (record.type === "break" ||
+          record.type === "continue") {
+        this.next = record.arg;
+      } else if (record.type === "return") {
+        this.rval = this.arg = record.arg;
+        this.method = "return";
+        this.next = "end";
+      } else if (record.type === "normal" && afterLoc) {
+        this.next = afterLoc;
+      }
+
+      return ContinueSentinel;
+    },
+
+    finish: function(finallyLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.finallyLoc === finallyLoc) {
+          this.complete(entry.completion, entry.afterLoc);
+          resetTryEntry(entry);
+          return ContinueSentinel;
+        }
+      }
+    },
+
+    "catch": function(tryLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc === tryLoc) {
+          var record = entry.completion;
+          if (record.type === "throw") {
+            var thrown = record.arg;
+            resetTryEntry(entry);
+          }
+          return thrown;
+        }
+      }
+
+      // The context.catch method must only be called with a location
+      // argument that corresponds to a known catch block.
+      throw new Error("illegal catch attempt");
+    },
+
+    delegateYield: function(iterable, resultName, nextLoc) {
+      this.delegate = {
+        iterator: values(iterable),
+        resultName: resultName,
+        nextLoc: nextLoc
+      };
+
+      if (this.method === "next") {
+        // Deliberately forget the last sent value so that we don't
+        // accidentally pass it on to the delegate.
+        this.arg = undefined;
+      }
+
+      return ContinueSentinel;
+    }
+  };
+
+  // Regardless of whether this script is executing as a CommonJS module
+  // or not, return the runtime object so that we can declare the variable
+  // regeneratorRuntime in the outer scope, which allows this module to be
+  // injected easily by `bin/regenerator --include-runtime script.js`.
+  return exports;
+
+}(
+  // If this script is executing as a CommonJS module, use module.exports
+  // as the regeneratorRuntime namespace. Otherwise create a new empty
+  // object. Either way, the resulting object will be used to initialize
+  // the regeneratorRuntime variable at the top of this file.
+   true ? module.exports : undefined
+));
+
+try {
+  regeneratorRuntime = runtime;
+} catch (accidentalStrictMode) {
+  // This module should not be running in strict mode, so the above
+  // assignment should always work unless something is misconfigured. Just
+  // in case runtime.js accidentally runs in strict mode, we can escape
+  // strict mode using a global Function call. This could conceivably fail
+  // if a Content Security Policy forbids using Function, but in that case
+  // the proper solution is to fix the accidental strict mode problem. If
+  // you've misconfigured your bundler to force strict mode and applied a
+  // CSP to forbid Function, and you're not willing to fix either of those
+  // problems, please detail your unique predicament in a GitHub issue.
+  Function("r", "regeneratorRuntime = r")(runtime);
+}
+
+
+/***/ }),
+
 /***/ "./node_modules/setimmediate/setImmediate.js":
 /*!***************************************************!*\
   !*** ./node_modules/setimmediate/setImmediate.js ***!
@@ -1120,6 +3497,36 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AlertComponent.vue?vue&type=style&index=0&id=ccb104a8&scoped=true&lang=css&":
+/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/AlertComponent.vue?vue&type=style&index=0&id=ccb104a8&scoped=true&lang=css& ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./AlertComponent.vue?vue&type=style&index=0&id=ccb104a8&scoped=true&lang=css& */ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AlertComponent.vue?vue&type=style&index=0&id=ccb104a8&scoped=true&lang=css&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ButtonComponent.vue?vue&type=style&index=0&id=c59fa660&scoped=true&lang=css&":
 /*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ButtonComponent.vue?vue&type=style&index=0&id=c59fa660&scoped=true&lang=css& ***!
@@ -1249,6 +3656,66 @@ if(false) {}
 
 
 var content = __webpack_require__(/*! !../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./MenuComponent.vue?vue&type=style&index=0&id=98f701fa&scoped=true&lang=css& */ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/MenuComponent.vue?vue&type=style&index=0&id=98f701fa&scoped=true&lang=css&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ModalComponent.vue?vue&type=style&index=0&id=4b2d100a&scoped=true&lang=css&":
+/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ModalComponent.vue?vue&type=style&index=0&id=4b2d100a&scoped=true&lang=css& ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./ModalComponent.vue?vue&type=style&index=0&id=4b2d100a&scoped=true&lang=css& */ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ModalComponent.vue?vue&type=style&index=0&id=4b2d100a&scoped=true&lang=css&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SpinnerComponent.vue?vue&type=style&index=0&id=1c7d574f&scoped=true&lang=css&":
+/*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SpinnerComponent.vue?vue&type=style&index=0&id=1c7d574f&scoped=true&lang=css& ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./SpinnerComponent.vue?vue&type=style&index=0&id=1c7d574f&scoped=true&lang=css& */ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SpinnerComponent.vue?vue&type=style&index=0&id=1c7d574f&scoped=true&lang=css&");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -1854,6 +4321,70 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AlertComponent.vue?vue&type=template&id=ccb104a8&scoped=true&":
+/*!*****************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/AlertComponent.vue?vue&type=template&id=ccb104a8&scoped=true& ***!
+  \*****************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "alertContainer" }, [
+    _c("div", { staticClass: "modal" }, [
+      _c(
+        "div",
+        {
+          staticClass: "headerList headerAlert",
+          class: _vm.title,
+          staticStyle: { padding: "20px 0" }
+        },
+        [_c("p", { staticClass: "title" })]
+      ),
+      _vm._v(" "),
+      _c("div", { staticClass: "alertBody" }, [
+        _vm._v("\n            " + _vm._s(_vm.messageFirst) + " "),
+        _c("br"),
+        _vm._v(" " + _vm._s(_vm.messageSecond) + "\n        ")
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "buttonContainer" }, [
+        _c("button", {
+          staticClass: "buttonBlue fas fa-check",
+          attrs: { type: "button" },
+          on: {
+            click: function($event) {
+              return _vm.deletionType(_vm.currentItem, _vm.id)
+            }
+          }
+        }),
+        _vm._v(" "),
+        _c("button", {
+          staticClass: "buttonBlue fas fa-times",
+          attrs: { type: "button" },
+          on: {
+            click: function($event) {
+              return _vm.animationCloseAlert()
+            }
+          }
+        })
+      ])
+    ])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ButtonComponent.vue?vue&type=template&id=c59fa660&scoped=true&":
 /*!******************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ButtonComponent.vue?vue&type=template&id=c59fa660&scoped=true& ***!
@@ -1877,9 +4408,9 @@ var render = function() {
         ? "fas fa-edit popAnimation"
         : _vm.type == "delete"
         ? "fas fa-trash-alt"
-        : _vm.type == "finish"
+        : _vm.type == "unfinished"
         ? "far fa-star"
-        : "fas fa-star popAnimation"
+        : "fas fa-star popAnimation borderShadow"
     ],
     style: { color: _vm.color, textShadow: _vm.shadow },
     on: {
@@ -1890,53 +4421,6 @@ var render = function() {
   })
 }
 var staticRenderFns = []
-render._withStripped = true
-
-
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e&":
-/*!*******************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e& ***!
-  \*******************************************************************************************************************************************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _vm._m(0)
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c("div", { staticClass: "row justify-content-center" }, [
-        _c("div", { staticClass: "col-md-8" }, [
-          _c("div", { staticClass: "card" }, [
-            _c("div", { staticClass: "card-header" }, [
-              _vm._v("Example Component")
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [
-              _vm._v(
-                "\n                    I'm an example component.\n                "
-              )
-            ])
-          ])
-        ])
-      ])
-    ])
-  }
-]
 render._withStripped = true
 
 
@@ -1964,51 +4448,77 @@ var render = function() {
       { staticClass: "itemContainer" },
       [
         _c("button-component", {
-          attrs: { type: _vm.editor, color: "gray" },
+          attrs: { type: "editorOff", color: "gray" },
           on: {
             click: function($event) {
-              return _vm.editItem($event)
+              return _vm.editItem($event, _vm.type)
             }
           }
         }),
         _vm._v(" "),
-        _c("div", [
-          _c(
-            "p",
-            {
-              staticClass: "itemText",
-              attrs: {
-                contentEditable: "false",
-                title: "Show All Inoformation"
-              },
-              on: {
-                click: function($event) {
-                  return _vm.showItem($event)
+        _c(
+          "div",
+          {
+            staticClass: "noOutliner",
+            attrs: { id: _vm.id, tabindex: _vm.index }
+          },
+          [
+            _c(
+              "p",
+              {
+                staticClass: "itemText editable",
+                style: _vm.type ? "font-weight:600" : "font-weight:300",
+                attrs: {
+                  contentEditable: "false",
+                  title: "Show All Information",
+                  "data-placeholder": "Add your task"
                 },
-                input: function($event) {
-                  return _vm.checkLenght($event)
+                on: {
+                  click: function($event) {
+                    return _vm.showAllInformationChecker(
+                      $event,
+                      _vm.type,
+                      false
+                    )
+                  },
+                  input: function($event) {
+                    return _vm.checkLenghtAndPaste($event, _vm.type)
+                  }
                 }
-              }
-            },
-            [_vm._v(_vm._s(_vm.task))]
-          ),
-          _vm._v(" "),
-          _vm.show
-            ? _c("p", { staticClass: "itemText" }, [
-                _c("i", [
-                  _vm._v(_vm._s("Created: " + _vm.created) + " "),
-                  _c("br"),
-                  _vm._v(" " + _vm._s("Finished: " + _vm.finished))
-                ])
-              ])
-            : _vm._e()
-        ]),
+              },
+              [_vm._v(_vm._s(_vm.value))]
+            ),
+            _vm._v(" "),
+            _vm.show
+              ? _c(
+                  "p",
+                  {
+                    staticClass: "itemText dateAndTime",
+                    on: {
+                      click: function($event) {
+                        return _vm.showAllInformationChecker(
+                          $event,
+                          _vm.type,
+                          true
+                        )
+                      }
+                    }
+                  },
+                  [
+                    _vm._v(_vm._s("Created: " + _vm.created) + " "),
+                    _c("br"),
+                    _vm._v(" " + _vm._s("Finished: " + _vm.finished))
+                  ]
+                )
+              : _vm._e()
+          ]
+        ),
         _vm._v(" "),
         _c("button-component", {
           attrs: { type: "delete", color: "black" },
           on: {
             click: function($event) {
-              return _vm.deleteItem()
+              return _vm.deleteItem($event, _vm.type)
             }
           }
         }),
@@ -2021,7 +4531,7 @@ var render = function() {
           },
           on: {
             click: function($event) {
-              return _vm.checkItem($event)
+              return _vm.ChangeStatus($event, _vm.type)
             }
           }
         })
@@ -2056,9 +4566,9 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { staticClass: "list" },
+    { staticClass: "list", attrs: { id: "list" } },
     [
-      _c("div", { staticClass: "headerList" }, [
+      _c("div", { staticClass: "headerList", attrs: { id: "headerList" } }, [
         _c("p", { staticClass: "title" }, [_vm._v(_vm._s(_vm.headerList))])
       ]),
       _vm._v(" "),
@@ -2070,11 +4580,13 @@ var render = function() {
             ? _c(
                 "section",
                 { staticClass: "fade", attrs: { id: "example" } },
-                _vm._l(_vm.data, function(item, index) {
+                _vm._l(_vm.exampleData, function(item, index) {
                   return _c("item-component", {
                     key: index,
                     attrs: {
-                      task: item.task,
+                      index: index,
+                      id: item.task_id,
+                      value: item.task,
                       status: item.status,
                       created: item.created,
                       finished: item.finished
@@ -2085,8 +4597,25 @@ var render = function() {
               )
             : _vm._e(),
           _vm._v(" "),
-          false
-            ? undefined
+          _vm.displaySection == "list"
+            ? _c(
+                "section",
+                { staticClass: "fade" },
+                _vm._l(_vm.listOfTasks, function(item, index) {
+                  return _c("item-component", {
+                    key: index,
+                    attrs: {
+                      index: index,
+                      id: item.task_id,
+                      value: item.task,
+                      status: item.status,
+                      created: item.created,
+                      finished: item.finished
+                    }
+                  })
+                }),
+                1
+              )
             : _vm._e(),
           _vm._v(" "),
           _vm.displaySection == "login"
@@ -2101,46 +4630,197 @@ var render = function() {
                 staticClass: "fade",
                 attrs: { id: "register", type: "register" }
               })
+            : _vm._e(),
+          _vm._v(" "),
+          (_vm.displaySection == "example" || _vm.displaySection == "list") &&
+          _vm.notTyped
+            ? _c("div", { staticClass: "buttonsContainer" }, [
+                _c("button", {
+                  staticClass: "buttonBlue fas fa-plus",
+                  staticStyle: {
+                    width: "50px",
+                    height: "50px",
+                    "font-size": "25px",
+                    padding: "13px",
+                    "box-shadow": "0 0 5px 0px gray"
+                  },
+                  attrs: { type: "button" },
+                  on: {
+                    click: function($event) {
+                      return _vm.addItemToList(true)
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "buttonBlue far fa-save",
+                    staticStyle: {
+                      width: "50px",
+                      height: "50px",
+                      "font-size": "25px",
+                      padding: "0",
+                      "box-shadow": "0 0 5px 0px gray"
+                    },
+                    attrs: { type: "button" },
+                    on: {
+                      click: function($event) {
+                        return _vm.saveChangesInDB(
+                          "/api/saveModificationsToUserLists",
+                          "modifiedLists",
+                          "deletedLists",
+                          "listOfLists"
+                        )
+                      }
+                    }
+                  },
+                  [
+                    _c(
+                      "i",
+                      {
+                        staticClass: "fas fa-spin",
+                        staticStyle: { display: "none" },
+                        attrs: {
+                          disabled:
+                            _vm.displaySection == "example" ? true : false
+                        }
+                      },
+                      [_vm._v("")]
+                    )
+                  ]
+                )
+              ])
             : _vm._e()
         ],
         1
       ),
       _vm._v(" "),
-      _c("menu-component", {
-        attrs: {
-          option: _vm.loginIcon,
-          positionY: _vm.loginPosition,
-          toltip: _vm.loginToltip,
-          disabled: "true"
-        },
-        on: {
-          click: function($event) {
-            return _vm.login()
-          }
-        }
-      }),
+      _vm.loggedIn && _vm.notTyped
+        ? _c(
+            "div",
+            [
+              _c("menu-component", {
+                staticClass: "buttonFixed",
+                attrs: {
+                  option: "list",
+                  positionY: _vm.loginPosition,
+                  toltip: "Display your lists",
+                  disabled: "true"
+                },
+                on: {
+                  click: function($event) {
+                    return _vm.showList()
+                  }
+                }
+              }),
+              _vm._v(" "),
+              _c("menu-component", {
+                staticClass: "buttonFixed",
+                attrs: {
+                  option: "logout",
+                  positionY: _vm.registerPosition,
+                  toltip: "Log Out"
+                },
+                on: {
+                  click: function($event) {
+                    return _vm.setAndDeleteEncryptCookie("logout")
+                  }
+                }
+              }),
+              _vm._v(" "),
+              _c("menu-component", {
+                staticClass: "buttonFixed",
+                attrs: {
+                  option: _vm.menuIcon,
+                  positionY: "0",
+                  toltip: _vm.menuToltip
+                },
+                on: {
+                  click: function($event) {
+                    return _vm.showMenu()
+                  }
+                }
+              })
+            ],
+            1
+          )
+        : !_vm.loggedIn && _vm.notTyped
+        ? _c(
+            "div",
+            [
+              _c("menu-component", {
+                staticClass: "buttonFixed",
+                attrs: {
+                  option: _vm.loginIcon,
+                  positionY: _vm.loginPosition,
+                  toltip: _vm.loginToltip,
+                  disabled: "true"
+                },
+                on: {
+                  click: function($event) {
+                    return _vm.changeBodyAndTitleOfSection(
+                      "login",
+                      "Login",
+                      "Sign in"
+                    )
+                  }
+                }
+              }),
+              _vm._v(" "),
+              _c("menu-component", {
+                staticClass: "buttonFixed",
+                attrs: {
+                  option: _vm.registerIcon,
+                  positionY: _vm.registerPosition,
+                  toltip: _vm.registerToltip
+                },
+                on: {
+                  click: function($event) {
+                    return _vm.changeBodyAndTitleOfSection(
+                      "register",
+                      "Register",
+                      "Sign Up"
+                    )
+                  }
+                }
+              }),
+              _vm._v(" "),
+              _c("menu-component", {
+                staticClass: "buttonFixed",
+                attrs: {
+                  option: _vm.menuIcon,
+                  positionY: "0",
+                  toltip: _vm.menuToltip
+                },
+                on: {
+                  click: function($event) {
+                    return _vm.showMenu()
+                  }
+                }
+              })
+            ],
+            1
+          )
+        : _vm._e(),
       _vm._v(" "),
-      _c("menu-component", {
-        attrs: {
-          option: _vm.registerIcon,
-          positionY: _vm.registerPosition,
-          toltip: "Sign up"
-        },
-        on: {
-          click: function($event) {
-            return _vm.register()
-          }
-        }
-      }),
+      _vm.showModal
+        ? _c("modal-component", {
+            attrs: { title: "My lists 📑", notTyped: _vm.notTyped }
+          })
+        : _vm._e(),
       _vm._v(" "),
-      _c("menu-component", {
-        attrs: { option: _vm.menuIcon, positionY: "0", toltip: _vm.menuToltip },
-        on: {
-          click: function($event) {
-            return _vm.showMenu()
-          }
-        }
-      })
+      _vm.showAlert
+        ? _c("alert-component", {
+            attrs: {
+              title: _vm.titleAlert,
+              messageFirst: _vm.messageAlert,
+              messageSecond: _vm.messageAlert2,
+              currentItem: _vm.currentItem,
+              id: _vm.currentId
+            }
+          })
+        : _vm._e()
     ],
     1
   )
@@ -2167,171 +4847,170 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("form", [
-    _vm.type == "login"
-      ? _c("div", [
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.usernameEmail,
-                expression: "usernameEmail"
-              }
-            ],
-            staticClass: "inputCute",
-            attrs: { type: "text", placeholder: "Username / Email" },
-            domProps: { value: _vm.usernameEmail },
-            on: {
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.usernameEmail = $event.target.value
-              }
-            }
-          }),
-          _vm._v(" "),
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.userPassword,
-                expression: "userPassword"
-              }
-            ],
-            staticClass: "inputCute",
-            attrs: { type: "password", placeholder: "Password" },
-            domProps: { value: _vm.userPassword },
-            on: {
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.userPassword = $event.target.value
-              }
-            }
-          }),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "buttonBlue",
-              attrs: { type: "button" },
+  return _c(
+    "form",
+    {
+      on: {
+        submit: function($event) {
+          $event.preventDefault()
+          _vm.type == "login" ? _vm.login() : _vm.register()
+        }
+      }
+    },
+    [
+      _vm.type == "login"
+        ? _c("div", [
+            _c("input", {
+              staticClass: "inputCute",
+              attrs: {
+                type: "text",
+                placeholder: "Username / Email",
+                autocomplete: "off",
+                autocorrect: "off",
+                autocapitalize: "off",
+                spellcheck: "false"
+              },
               on: {
-                click: function($event) {
-                  return _vm.login()
+                input: function($event) {
+                  return _vm.inputChecker($event, "usernameEmail", 40, 1, 4)
                 }
               }
-            },
-            [_vm._v("Login")]
-          )
-        ])
-      : _c("div", [
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.username,
-                expression: "username"
-              }
-            ],
-            staticClass: "inputCute",
-            attrs: { type: "text", placeholder: "Username" },
-            domProps: { value: _vm.username },
-            on: {
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.username = $event.target.value
-              }
-            }
-          }),
-          _vm._v(" "),
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.userEmail,
-                expression: "userEmail"
-              }
-            ],
-            staticClass: "inputCute",
-            attrs: { type: "text", placeholder: "Email" },
-            domProps: { value: _vm.userEmail },
-            on: {
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.userEmail = $event.target.value
-              }
-            }
-          }),
-          _vm._v(" "),
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.userPassword,
-                expression: "userPassword"
-              }
-            ],
-            staticClass: "inputCute",
-            attrs: { type: "password", placeholder: "Password" },
-            domProps: { value: _vm.userPassword },
-            on: {
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.userPassword = $event.target.value
-              }
-            }
-          }),
-          _vm._v(" "),
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.userPasswordConfirmation,
-                expression: "userPasswordConfirmation"
-              }
-            ],
-            staticClass: "inputCute",
-            attrs: { type: "password", placeholder: "Confirm Password" },
-            domProps: { value: _vm.userPasswordConfirmation },
-            on: {
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.userPasswordConfirmation = $event.target.value
-              }
-            }
-          }),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "buttonBlue",
-              attrs: { type: "button" },
+            }),
+            _vm._v(" "),
+            _c("span", [_vm._v(_vm._s(_vm.messageUsernameEmail))]),
+            _vm._v(" "),
+            _c("input", {
+              staticClass: "inputCute",
+              attrs: {
+                type: "password",
+                placeholder: "Password",
+                autocomplete: "off",
+                autocorrect: "off",
+                autocapitalize: "off",
+                spellcheck: "false"
+              },
               on: {
-                click: function($event) {
-                  return _vm.register()
+                input: function($event) {
+                  return _vm.inputChecker($event, "password", 16, 2, 2)
                 }
               }
-            },
-            [_vm._v("Sing Up")]
-          )
-        ])
-  ])
+            }),
+            _vm._v(" "),
+            _c("span", [_vm._v(_vm._s(_vm.messagePassword))]),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "buttonBlue",
+                attrs: { type: "submit" },
+                on: {
+                  click: function($event) {
+                    return _vm.login()
+                  }
+                }
+              },
+              [_c("i", [_vm._v("Sing In")])]
+            )
+          ])
+        : _c("div", [
+            _c("input", {
+              staticClass: "inputCute",
+              attrs: {
+                type: "text",
+                placeholder: "Username",
+                autocomplete: "off",
+                autocorrect: "off",
+                autocapitalize: "off",
+                spellcheck: "false"
+              },
+              on: {
+                input: function($event) {
+                  return _vm.inputChecker($event, "username", 15, 0, 0)
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c("span", [_vm._v(_vm._s(_vm.messageUsername))]),
+            _vm._v(" "),
+            _c("input", {
+              staticClass: "inputCute",
+              attrs: {
+                type: "text",
+                placeholder: "Email",
+                autocomplete: "off",
+                autocorrect: "off",
+                autocapitalize: "off",
+                spellcheck: "false"
+              },
+              on: {
+                input: function($event) {
+                  return _vm.inputChecker($event, "userEmail", 40, 1, 1)
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c("span", [_vm._v(_vm._s(_vm.messageEmail))]),
+            _vm._v(" "),
+            _c("input", {
+              staticClass: "inputCute",
+              attrs: {
+                type: "password",
+                placeholder: "Password",
+                autocomplete: "off",
+                autocorrect: "off",
+                autocapitalize: "off",
+                spellcheck: "false"
+              },
+              on: {
+                input: function($event) {
+                  return _vm.inputChecker($event, "userPassword", 16, 2, 2)
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c("span", [_vm._v(_vm._s(_vm.messagePassword))]),
+            _vm._v(" "),
+            _c("input", {
+              staticClass: "inputCute",
+              attrs: {
+                type: "password",
+                placeholder: "Confirm Password",
+                autocomplete: "off",
+                autocorrect: "off",
+                autocapitalize: "off",
+                spellcheck: "false"
+              },
+              on: {
+                input: function($event) {
+                  return _vm.inputChecker(
+                    $event,
+                    "userPasswordConfirmation",
+                    16,
+                    2,
+                    3
+                  )
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c("span", [_vm._v(_vm._s(_vm.messagePasswordConfirmation))]),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "buttonBlue",
+                attrs: { type: "submit" },
+                on: {
+                  click: function($event) {
+                    return _vm.register()
+                  }
+                }
+              },
+              [_c("i", [_vm._v("Sing Up")])]
+            )
+          ])
+    ]
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -2365,6 +5044,10 @@ var render = function() {
         ? "fa fa-user-plus buttonFixed"
         : _vm.option == "editor"
         ? "fas fa-pen buttonFixed"
+        : _vm.option == "logout"
+        ? "fas fa-user-alt-slash buttonFixed"
+        : _vm.option == "list"
+        ? "fa fa-list-ul buttonFixed"
         : "fas fa-times buttonFixed"
     ],
     style: { bottom: 50 * this.positionY + 15 * this.positionY + 10 + "px" },
@@ -2377,6 +5060,132 @@ var render = function() {
   })
 }
 var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ModalComponent.vue?vue&type=template&id=4b2d100a&scoped=true&":
+/*!*****************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/ModalComponent.vue?vue&type=template&id=4b2d100a&scoped=true& ***!
+  \*****************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "modalContainer" }, [
+    _c("div", { staticClass: "modal" }, [
+      _c(
+        "div",
+        { staticClass: "headerList", staticStyle: { padding: "20px 0" } },
+        [_c("p", { staticClass: "title" }, [_vm._v(_vm._s(_vm.title))])]
+      ),
+      _vm._v(" "),
+      _c("div", { staticClass: "modalBody" }, [
+        _c(
+          "section",
+          { staticClass: "fade", attrs: { id: "ListOfLists" } },
+          _vm._l(_vm.listOfLists, function(item, index) {
+            return _c("item-component", {
+              key: index,
+              attrs: {
+                index: index,
+                id: item.list_id,
+                value: item.list_name,
+                status: item.status,
+                created: item.created,
+                finished: item.finished,
+                type: "modalList"
+              }
+            })
+          }),
+          1
+        )
+      ]),
+      _vm._v(" "),
+      _vm.notTyped
+        ? _c("div", { staticClass: "buttonContainer" }, [
+            _c("button", {
+              staticClass: "buttonBlue fas fa-plus",
+              attrs: { type: "button" },
+              on: {
+                click: function($event) {
+                  return _vm.addList()
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "buttonBlue far fa-save",
+                attrs: { type: "button" },
+                on: {
+                  click: function($event) {
+                    return _vm.saveChanges()
+                  }
+                }
+              },
+              [
+                _c(
+                  "i",
+                  {
+                    staticClass: "fas fa-spin",
+                    staticStyle: { display: "none" }
+                  },
+                  [_vm._v("")]
+                )
+              ]
+            )
+          ])
+        : _vm._e()
+    ])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SpinnerComponent.vue?vue&type=template&id=1c7d574f&scoped=true&":
+/*!*******************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SpinnerComponent.vue?vue&type=template&id=1c7d574f&scoped=true& ***!
+  \*******************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _vm._m(0)
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "spinner" }, [
+      _c("i", { staticClass: "fas fa-spin", attrs: { id: "spinner" } }, [
+        _vm._v("")
+      ])
+    ])
+  }
+]
 render._withStripped = true
 
 
@@ -14532,24 +17341,109 @@ module.exports = g;
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _components_ExampleComponent__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/ExampleComponent */ "./resources/js/components/ExampleComponent.vue");
+/* harmony import */ var _components_SpinnerComponent__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/SpinnerComponent */ "./resources/js/components/SpinnerComponent.vue");
 /* harmony import */ var _components_ListComponent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/ListComponent */ "./resources/js/components/ListComponent.vue");
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
 
+ //Create a vue object root  
 
 var app = new Vue({
   el: '#listApp',
-  components: {
-    'test-component': _components_ExampleComponent__WEBPACK_IMPORTED_MODULE_0__["default"],
-    'list-component': _components_ListComponent__WEBPACK_IMPORTED_MODULE_1__["default"]
+  data: {
+    spinner: true
   },
-  methods: {
-    debug: function debug(label, message) {
-      var Label = label[0].toUpperCase() + label.slice(1);
-      return typeof message == "string" ? console.log("%c ".concat(Label, ": %c").concat(message), "color:yellow", "color:cyan") : console.log("%c ".concat(Label, ":"), "color:white", message);
-    }
+  components: {
+    'spinner-component': _components_SpinnerComponent__WEBPACK_IMPORTED_MODULE_0__["default"],
+    'list-component': _components_ListComponent__WEBPACK_IMPORTED_MODULE_1__["default"]
   }
 });
+
+/***/ }),
+
+/***/ "./resources/js/components/AlertComponent.vue":
+/*!****************************************************!*\
+  !*** ./resources/js/components/AlertComponent.vue ***!
+  \****************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _AlertComponent_vue_vue_type_template_id_ccb104a8_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AlertComponent.vue?vue&type=template&id=ccb104a8&scoped=true& */ "./resources/js/components/AlertComponent.vue?vue&type=template&id=ccb104a8&scoped=true&");
+/* harmony import */ var _AlertComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AlertComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/AlertComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _AlertComponent_vue_vue_type_style_index_0_id_ccb104a8_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./AlertComponent.vue?vue&type=style&index=0&id=ccb104a8&scoped=true&lang=css& */ "./resources/js/components/AlertComponent.vue?vue&type=style&index=0&id=ccb104a8&scoped=true&lang=css&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _AlertComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _AlertComponent_vue_vue_type_template_id_ccb104a8_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _AlertComponent_vue_vue_type_template_id_ccb104a8_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "ccb104a8",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/AlertComponent.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/AlertComponent.vue?vue&type=script&lang=js&":
+/*!*****************************************************************************!*\
+  !*** ./resources/js/components/AlertComponent.vue?vue&type=script&lang=js& ***!
+  \*****************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./AlertComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AlertComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/AlertComponent.vue?vue&type=style&index=0&id=ccb104a8&scoped=true&lang=css&":
+/*!*************************************************************************************************************!*\
+  !*** ./resources/js/components/AlertComponent.vue?vue&type=style&index=0&id=ccb104a8&scoped=true&lang=css& ***!
+  \*************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertComponent_vue_vue_type_style_index_0_id_ccb104a8_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./AlertComponent.vue?vue&type=style&index=0&id=ccb104a8&scoped=true&lang=css& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AlertComponent.vue?vue&type=style&index=0&id=ccb104a8&scoped=true&lang=css&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertComponent_vue_vue_type_style_index_0_id_ccb104a8_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertComponent_vue_vue_type_style_index_0_id_ccb104a8_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertComponent_vue_vue_type_style_index_0_id_ccb104a8_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertComponent_vue_vue_type_style_index_0_id_ccb104a8_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertComponent_vue_vue_type_style_index_0_id_ccb104a8_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/AlertComponent.vue?vue&type=template&id=ccb104a8&scoped=true&":
+/*!***********************************************************************************************!*\
+  !*** ./resources/js/components/AlertComponent.vue?vue&type=template&id=ccb104a8&scoped=true& ***!
+  \***********************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertComponent_vue_vue_type_template_id_ccb104a8_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./AlertComponent.vue?vue&type=template&id=ccb104a8&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/AlertComponent.vue?vue&type=template&id=ccb104a8&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertComponent_vue_vue_type_template_id_ccb104a8_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AlertComponent_vue_vue_type_template_id_ccb104a8_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
 
 /***/ }),
 
@@ -14635,75 +17529,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ButtonComponent_vue_vue_type_template_id_c59fa660_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ButtonComponent_vue_vue_type_template_id_c59fa660_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
-
-
-
-/***/ }),
-
-/***/ "./resources/js/components/ExampleComponent.vue":
-/*!******************************************************!*\
-  !*** ./resources/js/components/ExampleComponent.vue ***!
-  \******************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ExampleComponent.vue?vue&type=template&id=299e239e& */ "./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e&");
-/* harmony import */ var _ExampleComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ExampleComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-
-
-
-
-
-/* normalize component */
-
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
-  _ExampleComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
-  false,
-  null,
-  null,
-  null
-  
-)
-
-/* hot reload */
-if (false) { var api; }
-component.options.__file = "resources/js/components/ExampleComponent.vue"
-/* harmony default export */ __webpack_exports__["default"] = (component.exports);
-
-/***/ }),
-
-/***/ "./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js&":
-/*!*******************************************************************************!*\
-  !*** ./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js& ***!
-  \*******************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./ExampleComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ExampleComponent.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
-/***/ "./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e&":
-/*!*************************************************************************************!*\
-  !*** ./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e& ***!
-  \*************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./ExampleComponent.vue?vue&type=template&id=299e239e& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ExampleComponent.vue?vue&type=template&id=299e239e&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__["render"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
@@ -15052,6 +17877,180 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_MenuComponent_vue_vue_type_template_id_98f701fa_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_MenuComponent_vue_vue_type_template_id_98f701fa_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/ModalComponent.vue":
+/*!****************************************************!*\
+  !*** ./resources/js/components/ModalComponent.vue ***!
+  \****************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _ModalComponent_vue_vue_type_template_id_4b2d100a_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ModalComponent.vue?vue&type=template&id=4b2d100a&scoped=true& */ "./resources/js/components/ModalComponent.vue?vue&type=template&id=4b2d100a&scoped=true&");
+/* harmony import */ var _ModalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ModalComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/ModalComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _ModalComponent_vue_vue_type_style_index_0_id_4b2d100a_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ModalComponent.vue?vue&type=style&index=0&id=4b2d100a&scoped=true&lang=css& */ "./resources/js/components/ModalComponent.vue?vue&type=style&index=0&id=4b2d100a&scoped=true&lang=css&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _ModalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _ModalComponent_vue_vue_type_template_id_4b2d100a_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _ModalComponent_vue_vue_type_template_id_4b2d100a_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "4b2d100a",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/ModalComponent.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/ModalComponent.vue?vue&type=script&lang=js&":
+/*!*****************************************************************************!*\
+  !*** ./resources/js/components/ModalComponent.vue?vue&type=script&lang=js& ***!
+  \*****************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./ModalComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ModalComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/ModalComponent.vue?vue&type=style&index=0&id=4b2d100a&scoped=true&lang=css&":
+/*!*************************************************************************************************************!*\
+  !*** ./resources/js/components/ModalComponent.vue?vue&type=style&index=0&id=4b2d100a&scoped=true&lang=css& ***!
+  \*************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalComponent_vue_vue_type_style_index_0_id_4b2d100a_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./ModalComponent.vue?vue&type=style&index=0&id=4b2d100a&scoped=true&lang=css& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ModalComponent.vue?vue&type=style&index=0&id=4b2d100a&scoped=true&lang=css&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalComponent_vue_vue_type_style_index_0_id_4b2d100a_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalComponent_vue_vue_type_style_index_0_id_4b2d100a_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalComponent_vue_vue_type_style_index_0_id_4b2d100a_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalComponent_vue_vue_type_style_index_0_id_4b2d100a_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalComponent_vue_vue_type_style_index_0_id_4b2d100a_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/ModalComponent.vue?vue&type=template&id=4b2d100a&scoped=true&":
+/*!***********************************************************************************************!*\
+  !*** ./resources/js/components/ModalComponent.vue?vue&type=template&id=4b2d100a&scoped=true& ***!
+  \***********************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalComponent_vue_vue_type_template_id_4b2d100a_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./ModalComponent.vue?vue&type=template&id=4b2d100a&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/ModalComponent.vue?vue&type=template&id=4b2d100a&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalComponent_vue_vue_type_template_id_4b2d100a_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ModalComponent_vue_vue_type_template_id_4b2d100a_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/SpinnerComponent.vue":
+/*!******************************************************!*\
+  !*** ./resources/js/components/SpinnerComponent.vue ***!
+  \******************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _SpinnerComponent_vue_vue_type_template_id_1c7d574f_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./SpinnerComponent.vue?vue&type=template&id=1c7d574f&scoped=true& */ "./resources/js/components/SpinnerComponent.vue?vue&type=template&id=1c7d574f&scoped=true&");
+/* harmony import */ var _SpinnerComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SpinnerComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/SpinnerComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _SpinnerComponent_vue_vue_type_style_index_0_id_1c7d574f_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./SpinnerComponent.vue?vue&type=style&index=0&id=1c7d574f&scoped=true&lang=css& */ "./resources/js/components/SpinnerComponent.vue?vue&type=style&index=0&id=1c7d574f&scoped=true&lang=css&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _SpinnerComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _SpinnerComponent_vue_vue_type_template_id_1c7d574f_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _SpinnerComponent_vue_vue_type_template_id_1c7d574f_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "1c7d574f",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/SpinnerComponent.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/SpinnerComponent.vue?vue&type=script&lang=js&":
+/*!*******************************************************************************!*\
+  !*** ./resources/js/components/SpinnerComponent.vue?vue&type=script&lang=js& ***!
+  \*******************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_SpinnerComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./SpinnerComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SpinnerComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_SpinnerComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/SpinnerComponent.vue?vue&type=style&index=0&id=1c7d574f&scoped=true&lang=css&":
+/*!***************************************************************************************************************!*\
+  !*** ./resources/js/components/SpinnerComponent.vue?vue&type=style&index=0&id=1c7d574f&scoped=true&lang=css& ***!
+  \***************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_SpinnerComponent_vue_vue_type_style_index_0_id_1c7d574f_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./SpinnerComponent.vue?vue&type=style&index=0&id=1c7d574f&scoped=true&lang=css& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SpinnerComponent.vue?vue&type=style&index=0&id=1c7d574f&scoped=true&lang=css&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_SpinnerComponent_vue_vue_type_style_index_0_id_1c7d574f_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_SpinnerComponent_vue_vue_type_style_index_0_id_1c7d574f_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_SpinnerComponent_vue_vue_type_style_index_0_id_1c7d574f_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_SpinnerComponent_vue_vue_type_style_index_0_id_1c7d574f_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_SpinnerComponent_vue_vue_type_style_index_0_id_1c7d574f_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/SpinnerComponent.vue?vue&type=template&id=1c7d574f&scoped=true&":
+/*!*************************************************************************************************!*\
+  !*** ./resources/js/components/SpinnerComponent.vue?vue&type=template&id=1c7d574f&scoped=true& ***!
+  \*************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_SpinnerComponent_vue_vue_type_template_id_1c7d574f_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./SpinnerComponent.vue?vue&type=template&id=1c7d574f&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SpinnerComponent.vue?vue&type=template&id=1c7d574f&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_SpinnerComponent_vue_vue_type_template_id_1c7d574f_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_SpinnerComponent_vue_vue_type_template_id_1c7d574f_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
