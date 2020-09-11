@@ -6,7 +6,7 @@
 
 - Responsive design, *Designed to adjust depending on the elements that are present in the mobile browser (url bar, status bar and keyboard).*
 - Fast and efficent functionallity, *List functionality is based in JS code*
-- Offline App, *Once you made your first request from the web, manifest download all file necesary to work witout internet and save all changes when you are online*
+- Offline App, *Use a appCache and local storage to save all your data an let you work even if you are offline*
 - Friendly and Simple interface, *Few buttons and clear icons tells you all actions in to do list.*
 
 ### https://todolisttesting.000webhostapp.com/
