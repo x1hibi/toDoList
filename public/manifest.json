@@ -1,12 +1,12 @@
-{   
-    "/css/app.css": "/css/app.css",
-    "/js/app.js": "/js/app.js",
+{
+    "/css/app.min.css": "/css/app.min.css",
+    "/js/app.min.js": "/js/app.min.js",
     "background_color":"#7124d6",
-    "display":"fullscreen ",
     "description": "This is a easy, efficent and fast to do list for everyone.",
+    "display":"fullscreen ",
     "name":"To Do List (DIN)",
     "orientation":"any",
     "short_name":"ToDoList",
-    "start_url":"http://192.168.1.70:8000/",
+    "start_url":"https://todolisttesting.000webhostapp.com/",
     "theme_color":"darkblue"
 }

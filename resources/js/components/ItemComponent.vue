@@ -3,7 +3,7 @@
         <div class="itemContainer">
         <button-component type="editorOff" color="gray" @click="editItem($event,type)" ></button-component>
         <div :id="id" :tabindex="index" class="noOutliner" >
-            <p class="itemText editable" contentEditable="false" :style="type ? 'font-weight:600' : 'font-weight:300'" @click="showAllInformationChecker($event,type,false)" @input="checkLenghtAndPaste($event,type)" title="Show All Information" data-placeholder="Add your task">{{value}}</p>
+            <p class="itemText editable" contentEditable="false" :style="type ? 'font-weight:700' : 'font-weight:300'" @click="showAllInformationChecker($event,type,false)" @input="checkLenghtAndPaste($event,type)" title="Show All Information" data-placeholder="Add your task">{{value}}</p>
             <p class="itemText dateAndTime" v-if="show" @click="showAllInformationChecker($event,type,true)">{{'Created: '+created}} <br/> {{'Finished: '+finished}}</p>
         </div>
         <button-component type="delete" color="black"  @click="deleteItem($event,type)"></button-component>
@@ -241,7 +241,6 @@ import button from "./ButtonComponent"
                 let maxLength=type=='modalList' ? 45 : 255
                 let newAllowedString=plainTextTyped
                 //Allways change the inner html to avoid html insertiom
-                console.log(e.target.innerHTML)
                 //check if length is correct and handle the number of char paste
                 if(plainTextTyped.length>maxLength){
                     //resize the string and set in the new value in the current editor

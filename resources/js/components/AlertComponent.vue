@@ -164,7 +164,7 @@ import item from './ItemComponent'
     color:white;
     font-family: 'Ubuntu', sans-serif;
     font-size: 20px;
-    font-weight: 600 !important;
+    font-weight: 700 !important;
     height: fit-content;
     padding: 10px 10px 0 10px;
     text-align: center;

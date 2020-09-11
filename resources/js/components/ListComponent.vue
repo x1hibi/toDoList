@@ -1,6 +1,6 @@
 <template>
     <div id="list" class="list">
-        <div id="headerList" class="headerList"><p class="title">{{headerList}}</p></div>
+        <div id="headerList" class="headerList"><h1 class="title">{{headerList}}</h1    ></div>
         <div id="bodyList" class="bodyList" >
             <section id="example" v-if="displaySection=='example'" class="fade">
                 <item-component v-for="(item,index) in exampleData" :key="index" :index="index" :id="item.task_id" :value="item.task" :status="item.status" :created="item.created" :finished="item.finished"></item-component>
@@ -18,6 +18,7 @@
         <div v-if="loggedIn && notTyped" >
             <menu-component class="buttonFixed" @click="showList()" option="list" :positionY="loginPosition" toltip="Display your lists" disabled="true"></menu-component>
             <menu-component class="buttonFixed" @click="setAndDeleteEncryptCookie('logout')" option="logout" :positionY="registerPosition" toltip="Log Out"></menu-component>
+            <!-- <menu-component class="buttonFixed" @click="fullscreen()" :option="fullscreenIcon" :positionY="fullscreenPosition" :toltip="fullscreenToltip"></menu-component> -->
             <menu-component class="buttonFixed" @click="showMenu()" :option="menuIcon" positionY="0" :toltip="menuToltip"></menu-component>
         </div>
         <div v-else-if="!loggedIn && notTyped">
@@ -42,6 +43,7 @@
         },
         mounted() {
             //check the height and adjust
+            this.deviceHeight=screen.availHeight
             this.adjustHeight()
             window.addEventListener("resize",()=>{
                 this.adjustHeight()    
@@ -59,6 +61,7 @@
                 currentSection:'example',
                 deletedLists:[],
                 deletedTasks:[],
+                deviceHeight:'',
                 displaySection:'example',
                 exampleData:[{id:1,task:'Finish homerwork 💻',list_id:0,status:'finished',created:"2020-09-08|10:00",finished:'2020-09-08|12:00'},
                              {id:2,task:'Clean dishes 😫',list_id:0,status:'finished',created:"2020-09-08|11:10",finished:'2020-09-08|11:50'},   
@@ -67,6 +70,10 @@
                              {id:5,task:'Watch a movie 😂🤣',list_id:0,status:'finished',created:"2020-09-08|17:30",finished:'2020-09-08|19:30'},
                              {id:6,task:'Organize a new day... 😎',list_id:0,status:'unfinished',created:"2020-09-08|21:00",finished:''} 
                             ],
+                fullscreenActive:false,
+                fullscreenIcon:"fullscreen",
+                fullscreenPosition:"0",
+                fullscreenToltip:"Activate FullScreen",
                 headerList:"Example list 🗒️",
                 idsOfSavedListInDB:[],
                 itemInEdition:'',
@@ -117,6 +124,22 @@
                                              : console.log(`%c ${Label}:`,"color:white",message)
             },
 
+            /**Handle the fullscreen button  */
+
+            fullscreen(){
+                this.showMenu()
+                if(!this.fullscreenActive){
+                    this.fullscreenToltip='Desactivate Fullscreen'
+                    this.fullscreenIcon='standarScreen'
+                    document.body.requestFullscreen()
+                }else{
+                    this.fullscreenToltip='Activate FullScreen'
+                    this.fullscreenIcon='fullscreen'
+                    document.exitFullscreen()
+                }
+                this.fullscreenActive=!this.fullscreenActive
+                
+            },
             /**
              * Handle the status of the current list when user delete / modifify a task
             */
@@ -592,11 +615,13 @@
              */
 
             showMenu(){
+                //change positions of buttons to activate animation 
                 this.menuDisplayed=!this.menuDisplayed
                 this.menuIcon=this.menuDisplayed ? 'close' : 'menu'
                 this.menuToltip=this.menuDisplayed ? 'Close menu' : 'Display menu'
                 this.loginPosition= this.menuDisplayed ? "1" : "0"
                 this.registerPosition=this.menuDisplayed ? "2" : "0"
+                this.fullscreenPosition=this.menuDisplayed ? "3" : "0"
             },
 
             /**
@@ -658,13 +683,19 @@
                 //Check if is a mobile device as Iphone or Android smartphone, we return boolean usig a regex function 
                 let mobileDevice=/Android|iPhone/g.test(navigator.userAgent)
                 //Calculate the diference in pixels between the size of the screen and the height of the windows
-                let diferenceOfPixelsInScreen= window.screen.availHeight-window.innerHeight
-                //We use user agent to check the current browser and select a correct parameter parameter is status bar ~25px, urlbar ~50px, options browser bar 50px, android navigation bar 50 px, and extra 50 for precaution for non counted bars 50px 
+                //we calcualte diferent the current heightin standar scrren and fullscreen v1.2
+                let currentHeight=document.fullscreen ? screen.height : window.innerHeight
+                let currentHeightReference= document.fullscreen ? this.deviceHeight : window.screen.availHeight
+                let diferenceOfPixelsInScreen= currentHeightReference-currentHeight
+                //We use user agent and document.fullscrren to check the current browser and select a correct parameter parameter is status bar ~25px, urlbar ~50px, options browser bar 50px, android navigation bar 50 px, and extra 50 for precaution for non counted bars 50px 
                 let browserParameter = /OPR/g.test(navigator.userAgent) ? 175+50 : /Firefox/g.test(navigator.userAgent) ? 125+50 : /Chrome/g.test(navigator.userAgent) ? 125+50 : 125+50
+                //we we check the browser and the fullscreen to define the value
+                //let statusBar= document.fullscreen && /Chrome/g.test(navigator.userAgent) ? 0 : document.fullscreen ? 0 : 25
+                let statusBar=25
                 //If the diference is bigger than 100 px means that keyboars is in the screen, we asume that size of status bar and url bar together add up are less than 100px in Chrome naviagtor every navigator has diferents values 
                 let keyboardInScreen = diferenceOfPixelsInScreen > browserParameter
                 //If the diference is more than 25px (size of status bar) but less than 100px means that url bar is in the navigator
-                let urlBarInScreen = browserParameter > diferenceOfPixelsInScreen && diferenceOfPixelsInScreen > 25
+                let urlBarInScreen = browserParameter > diferenceOfPixelsInScreen && diferenceOfPixelsInScreen > statusBar
                 //STEP 2 Check if you are in mobile device and adjust heigth and chang styles
                 if(mobileDevice){
                     //Remove bottons when keyboard is open
@@ -673,6 +704,7 @@
                         //we set the exact heigth in the element with id listApp
                         document.getElementById('listApp').style.height= `${window.innerHeight}px`
                         if(orientationOfDevice=='landscape'){
+                            console.log("landscape")
                             //we adjust some styles to be able to use correcty the aplication with less space
                             document.getElementById("headerList").style.display="none"
                             document.getElementById("bodyList").style.gridArea="1/1/3/2"

@@ -78,6 +78,7 @@ class TaskController extends Controller
                         ->select('tasks.*')
                         ->where("users.user_id",$userId)
                         ->orderBy('list_id')
+                        ->orderBy('task_id')
                         ->get();
 
         //handle teh cases when the number of task of user are 0 and 1

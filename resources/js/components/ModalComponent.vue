@@ -80,7 +80,7 @@ export default {
 
 .modalBody{
     font-family: 'Ubuntu', sans-serif;
-    font-weight: 600 !important;
+    font-weight: 700 !important;
     height:calc(95% - 125px);
     margin: 5px;
     overflow-y: auto;

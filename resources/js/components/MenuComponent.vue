@@ -1,5 +1,5 @@
 <template>
-        <i @click="$emit('click',$event)"  :class="[option=='menu' ? 'fas fa-stream buttonFixed' : option=='login' ? 'fas fa-user buttonFixed' : option=='register' ? 'fa fa-user-plus buttonFixed' : option=='editor' ? 'fas fa-pen buttonFixed' : option=='logout' ? 'fas fa-user-alt-slash buttonFixed' : option=='list' ? 'fa fa-list-ul buttonFixed' : 'fas fa-times buttonFixed' ]" :style="{bottom: `${(50*this.positionY)+15*(this.positionY)+10}px`}" :title="toltip"></i>
+        <i @click="$emit('click',$event)"  :class="[option=='menu' ? 'fas fa-stream buttonFixed' : option=='login' ? 'fas fa-user buttonFixed' : option=='register' ? 'fa fa-user-plus buttonFixed' : option=='editor' ? 'fas fa-pen buttonFixed' : option=='logout' ? 'fas fa-user-alt-slash buttonFixed' : option=='list' ? 'fa fa-list-ul buttonFixed' : option=='fullscreen' ? 'fa fa-expand buttonFixed' : option=='standarScreen' ? 'fa fa-compress buttonFixed' : 'fas fa-times buttonFixed' ]" :style="{bottom: `${(50*this.positionY)+15*(this.positionY)+10}px`}" :title="toltip"></i>
 </template>
 
 <script>
