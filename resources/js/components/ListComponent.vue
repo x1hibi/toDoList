@@ -12,7 +12,7 @@
             <login-component id="register" v-if="displaySection=='register'" type='register' class="fade"></login-component>
             <div class="buttonsContainer" v-if="(displaySection=='example' || displaySection=='list') && notTyped">
                 <button type="button" class="buttonBlue fas fa-plus" @click="addItemToList(true)" style="width:50px;height:50px;font-size:25px;padding:13px;box-shadow: 0 0 5px 0px gray;"></button>
-                <button type="button" class="buttonBlue far fa-save" @click="saveChangesInDB('/api/saveModificationsToUserLists','modifiedLists','deletedLists','listOfLists')" style="width:50px;height:50px;font-size:25px;padding:0;box-shadow: 0 0 5px 0px gray;"><i class="fas fa-spin" style="display:none;" :disabled="displaySection=='example' ? true : false">&#xf1ce;</i></button>
+                <!-- <button type="button" class="buttonBlue far fa-save" @click="saveChangesInDB('/api/saveModificationsToUserLists','modifiedLists','deletedLists','listOfLists')" style="width:50px;height:50px;font-size:25px;padding:0;box-shadow: 0 0 5px 0px gray;"><i class="fas fa-spin" style="display:none;" :disabled="displaySection=='example' ? true : false">&#xf1ce;</i></button> -->
             </div>
         </div>
         <div v-if="loggedIn && notTyped" >
@@ -211,7 +211,7 @@
                 
                 //STEP FIVE Save changes in local variables and the local storage from the navigator 
                 await this.saveLocalTasks()
-                await this.saveChangesInNavigator()
+                await this.saveChangesInNavigator("save changes")
                 return true 
             },
 
@@ -219,7 +219,7 @@
              * Saves tasks / list with all modifications to local storage that has not yet been saved by user
             */
 
-            saveChangesInNavigator(){
+            saveChangesInNavigator(label='default'){
                 //save all changes in 
                 let changesToSaveInLocalStorage={
                     addedList:this.addedList,
@@ -310,7 +310,7 @@
                 })
                 //Save changes in local storage
                 await this.saveLocalTasks()
-                this.saveChangesInNavigator() 
+                this.saveChangesInNavigator("refresh") 
                 return true
             },
 
@@ -321,10 +321,8 @@
 
             addItemToList(isTask){
                 let items=document.getElementsByClassName("editable")
-                //get and check if editor is active
-                let editorIsNotActive=document.getElementsByClassName("editableBorder").length==0
                 //Additon is allowed when list are empty or if the last task are not empty
-                if(items.length==0 || items[items.length-1].textContent && editorIsNotActive){
+                if(items.length==0 || items[items.length-1].textContent.length>0 ){
                     //Get the time of creation
                     let date=new Date()
                     let time=date.toLocaleTimeString().match(/\d+:\d{2}/g)[0]
@@ -347,7 +345,7 @@
                     if(this.displaySection!='example'){
                         //Save changes in local storage
                         this.saveLocalTasks()                    
-                        this.saveChangesInNavigator()
+                        this.saveChangesInNavigator("add")
                         //update the status of the list if add a new task
                         isTask ? this.checkAndModifyStatusList() : ''
                     }
@@ -375,11 +373,45 @@
                 //we block all functionalities from the list to avoid conflicts
                 this.notSavingChanges=!disable
                 //we get the save button element
-                let buttonSave= disable ? document.getElementsByClassName("fa-save")[this.showModal ? 1 : 0] : document.getElementsByClassName("fa-spin")[this.showModal ? 1 : 0].parentElement;
+                let buttonSave= disable ? document.getElementsByClassName("fa-save")[0] : document.getElementsByClassName("fa-spin")[0].parentElement;
                 //we disable/active save button and set animation 
                 buttonSave.disabled=disable
                 buttonSave.classList=disable ? "buttonBlue far" : "buttonBlue far fa-save"
                 buttonSave.children[0].style.display=disable ? "block" : "none"
+            },
+
+            /**
+             * Remplace a list_id negative on modified task for the list id assign by the DB when the new list are saved and we set the new one to be able to save the new tasks in the correct list.
+             * @param {Boolean} setNewListIdInTaskLocalBackup - Indicate if we remplace the id of task from the localstorage
+             */
+            setNewListIdOnModifiedTask(setNewListIdInTaskLocalBackup=false){
+                //we remplace the list_id of all task created to be able to saved in data base
+                if(setNewListIdInTaskLocalBackup){
+                    this.listOfTasksLocalBackup.forEach(list=>{
+                        list.forEach(task=>{
+                            if(task.list_id[0]=="-"){
+                                let indexWithNewId=task.list_id*-1-1
+                                let newIdList=this.idsOfSavedListInDB[indexWithNewId]
+                                task.list_id=newIdList
+                            }
+                        })
+                    })
+                }
+                //we iterate over all modified task and change the negative list id from the new one
+                this.modifiedTasks.forEach(task=>{
+                    //check if list id is negative
+                    if(task.list_id[0]=="-"){
+                        //get the index in postive 
+                        let indexWithNewId=task.list_id*-1-1
+                        //search the new assigned list id 
+                        let newIdList=this.idsOfSavedListInDB[indexWithNewId]
+                        //change the current list id for the new one
+                        task.list_id=newIdList
+                    }
+                })
+                //we save changes on the local storage
+                this.saveChangesInNavigator("set new list")
+                return "ok"
             },
 
             /**
@@ -399,7 +431,7 @@
                     let changesToApplyDB= {modifiedItems:this[listModifiedItems],deletedItems:deletedItems,ude:this.ude,rke:this.rke} 
                     //start request with the select url to save modificaions in list table or user task table
                     await axios.post(urlRequest,changesToApplyDB).then(
-                        response=>{
+                        async response=>{
                             let status=response.data
                             //check the status retuned in the response with regex
                             let regex=/^(empty|ok)$/g
@@ -420,19 +452,15 @@
                                     //We changes the id of all task created before to save in DB
                                     //Save all id of the list saved in database
                                     this.idsOfSavedListInDB=response.data[4].reverse()
-                                    //we remplace the list_id of all task created to be able to saved in data base
-                                    this.listOfTasksLocalBackup.forEach((list,i)=>{
-                                        list.forEach((task,index)=>{
-                                            if(task.list_id[0]=="-"){
-                                                let indexWithNewId=task.list_id*-1-1
-                                                let newIdList=this.idsOfSavedListInDB[indexWithNewId]
-                                                task.list_id=newIdList
-                                            }
-                                        })
-                                    })
-                                    if(status[3]=[]){
-                                        //we delete all task in backup saved local storage and local when all list are deleted
+                                    //set new list id on new task
+                                    await this.setNewListIdOnModifiedTask()
+                                    //check for empty list of lists
+                                    if(status[3].length===0){
+                                        //set empty varibles when list are deleted 
+                                        this.addedTask=-1.1 
                                         this.listOfTasksBackup=[]
+                                        this.modifiedTasks=[]
+                                        this.listOfTasksLocalBackup=[]
                                     }
                                     this.disabledSaveButton(false)
                                     this.saveChangesInDB('/api/saveModificationsToUserTasks','modifiedTasks','deletedTasks','listOfTasks')
@@ -445,25 +473,14 @@
                                     }
                                     //we save the new data from database in listOfTasksLocalBackup
                                     this.listOfTasksLocalBackup=status[3].slice(0)
-                                }
-                                //Save changes in local storage to save the new ids of the list in the navigator
-                                this.saveChangesInNavigator()
-                                
+                                    this.saveChangesInNavigator("save in db in list of task")
+                                }                                
                             }else{
                                 if(listOfElements=="listOfTasks"){
-                                    //if task are not saved we change the id of all task created to be able to make sure that next time will be saved corrctly 
+                                    //if task are not saved we change the id of all task created to be able to make sure that next time will be saved correctly 
                                     //code to change all id_list from the backup list and save changes
-                                    //Display modal try later error in server 
-                                    this.listOfTasksLocalBackup.forEach((list,i)=>{
-                                        list.forEach((task,index)=>{
-                                            if(task.list_id[0]=="-"){
-                                                let indexWithNewId=task.list_id*-1-1
-                                                let newIdList=this.idsOfSavedListInDB[indexWithNewId]
-                                                task.list_id=newIdList
-                                            }
-                                        })
-                                    })
-                                    this.saveChangesInNavigator()
+                                    //Display modal try later error in server for version 1.1!!!!
+                                    await this.setNewListIdOnModifiedTask(true)
                                 }
                                 console.log("error in the server!")
                                 this.disabledSaveButton(false)
@@ -704,7 +721,6 @@
                         //we set the exact heigth in the element with id listApp
                         document.getElementById('listApp').style.height= `${window.innerHeight}px`
                         if(orientationOfDevice=='landscape'){
-                            console.log("landscape")
                             //we adjust some styles to be able to use correcty the aplication with less space
                             document.getElementById("headerList").style.display="none"
                             document.getElementById("bodyList").style.gridArea="1/1/3/2"
@@ -794,7 +810,7 @@ section{
     box-sizing: border-box;
     display: grid;
     grid-area: 2/1/3/2;
-    grid-template-columns: 1fr 1fr ;
+    grid-template-columns: 1fr;
     padding-top: 10px;
 }
 
